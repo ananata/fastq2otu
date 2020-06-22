@@ -209,7 +209,7 @@ paired_analysis(fp, sample.names, object) {
 	dadaRs <- mapply(dadaSeqs, derep=derepRs, err=errRs, object=object, SIMPLIFY = FALSE)
 
 	# Merge forward and reverse reads
-	merged_amplicons <- mapply(mergeSeqPairs, dadaFS=dadaFs, dadaRS=dadaRs, derepFS=derepFs, derepRS=derepRs, SIMPLIFY = FALSE)
+	merged_amplicons <- mapply(mergeSeqPairs, dadaFS=dadaFs, dadaRS=dadaRs, derepFS=derepFs, derepRS=derepRs, object=object, SIMPLIFY = FALSE)
 	cat(names(merged_amplicons))
 	m.print <- paste0(object@projectPrefix, "_merged_pairs_table.csv")
 
