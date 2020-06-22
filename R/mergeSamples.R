@@ -3,6 +3,7 @@
 #' @param seqtabs List of path(s) to frequency tables
 #' @param final.print Name of file to save. 
 #' @return Merged table that can be used to complete cross sample comparisons
+#' @export
 mergeSamples <- function(otutabs, seqtabs, final.print = "final_merged_table.csv") {
   # Load required libraries
   # Verify that sequence tables correspond to OTU tables

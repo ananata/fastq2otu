@@ -1,35 +1,34 @@
-plotQuality <- function(configFile) {
-  # Read YML file
-  options <- yaml.load_file(configFile)
+#" Generate Quality Distribution as Aggregrated Plot
+#' 
+#' @param fp Path to directory containing FASTQ files
+#' @param out Ouput directory
+#' @param label Unique file or project id used to generate file/plot title 
+#' @export
+plotQuality <- function(fp, out, label) {
+	# Verify that inputs are valid
+	if (!dir.exists(fp) | length(list.files(path = fp, pattern = ".fastq")) == 0) {
+		stop(sprintf("'%s' does not exist or no FASTQ files could be detected in path", fp))
+	}
 
-  # Extract required parameters
-  fp <- options$pathToData
-  out <- options$outDir
-  label <- options$qualityPlotPDF
+	if (!dir.exists(out)) {
+		stop(sprintf("'%s' does not exist.", out))
+	}
 
-  # Verify that inputs are valid
-  if (!dir.exists(fp) | length(list.files(path = fp, pattern = ".fastq")) == 0) {
-    stop(sprintf("'%s' does not exist or no FASTQ files could be detected in path", fp))
-  }
+	# Extract all FASTQ files from path
+	Fs <- sort(list.files(fp, pattern="*.fastq", full.names = TRUE))
 
-  if (!dir.exists(out)) {
-    stop(sprintf("'%s' does not exist.", out))
-  }
+	# Find current date
+	currDate <- gsub("-", "", Sys.Date())
 
-  # Extract all FASTQ files from path
-  Fs <- sort(list.files(fp, pattern="*.fastq", full.names = TRUE))
+	## Plot aggregate graph
+	plotAgg <- dada2::plotQualityProfile(Fs, n = 1e+05, aggregate = T)
 
-  # Find current date
-  currDate <- gsub("-", "", Sys.Date())
-
-  ## Plot aggregate graph
-  plotAgg <- dada2::plotQualityProfile(Fs, n = 1e+05, aggregate = T)
-
-  ## Change plot title
-  plotAgg <- plotAgg + ggplot2::ggtitle(paste(label, " Aggregate Quality Plot"))
-
-  ## Return plot (only one plot is generated per dataset)
-  return(plotAgg)
+	if (!missing(label)) {
+		## Change plot title
+		plotAgg <- plotAgg + ggplot2::ggtitle(paste(label, " Aggregate Quality Plot"))
+	}
+	## Return plot (only one plot is generated per dataset)
+	return(plotAgg)
 
 }
 

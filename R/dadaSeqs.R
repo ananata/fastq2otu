@@ -1,13 +1,14 @@
-dadaSeqs <- function(derep, err) {
-  # Load required libraries
-  # Extract required parameters
-  bandSize <- as.numeric(options$dadaBandSize)
-  omgA <- as.numeric(options$dadaOmegaA)
-
+#' Denoise sequence data
+#' 
+#' @param derep Output(s) of derepSeqs function
+#' @param err Output(s) of learnErrors function
+#' @return  dada object
+#' @export
+dadaSeqs <- function(derep, err, object) {
   # Execute the function
-  dada <- dada::dada(derep, err=err, BAND_SIZE = bandSize, OMEGA_A = omgA)
+  dada_obj <- dada::dada(derep, err=err, BAND_SIZE = object@dadaBandSize, OMEGA_A = object@dadaOmegaA)
 
   # Return derep object
-  return(dada)
+  return(dada_obj)
 }
 

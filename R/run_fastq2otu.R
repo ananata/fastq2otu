@@ -40,6 +40,11 @@ run_fastq2otu <- function(object) {
 		message("YAML Version: ", packageVersion("yaml"))
 		message("FASTQCR Version: ", packageVersion("fastqcr"))
 		
+		# Download sequences
+		if (object@runFastqDump) {
+			fp <- getSeqs(object)
+		}
+		
 		# Remove primers and update path
 		if (object@trimPrimers) {
 			message("==== Removing Primers ====")
@@ -141,7 +146,7 @@ single_analysis(fp, sample.names, object) {
 	
 	# Denoise Data
 	message("==== Removing Learned Errors ====")
-	dadaFs <- mapply(dadaSeqs, derep=derepFs, err=errFs, SIMPLIFY = FALSE)
+	dadaFs <- mapply(dadaSeqs, derep=derepFs, err=errFs, object=object, SIMPLIFY = FALSE)
 	
 	# Track changes
 	getSeqN <- function(x) sum(getUniques(x))
@@ -200,8 +205,8 @@ paired_analysis(fp, sample.names, object) {
 
 	# Denoise Data
 	message("==== Removing Learned Errors ====")
-	dadaFs <- mapply(dadaSeqs, derep=derepFs, err=errFs, SIMPLIFY = FALSE)
-	dadaRs <- mapply(dadaSeqs, derep=derepRs, err=errRs, SIMPLIFY = FALSE)
+	dadaFs <- mapply(dadaSeqs, derep=derepFs, err=errFs, object=object, SIMPLIFY = FALSE)
+	dadaRs <- mapply(dadaSeqs, derep=derepRs, err=errRs, object=object, SIMPLIFY = FALSE)
 
 	# Merge forward and reverse reads
 	merged_amplicons <- mapply(mergeSeqPairs, dadaFS=dadaFs, dadaRS=dadaRs, derepFS=derepFs, derepRS=derepRs, SIMPLIFY = FALSE)

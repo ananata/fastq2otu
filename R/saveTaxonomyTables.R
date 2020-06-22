@@ -1,3 +1,10 @@
+#' Save OTU Tables
+#' 
+#' Saves list of tables as tab-delimited CSV files
+#' @param tables List of  OTU tables
+#' @param sample.names List of file ids
+#' @return Path(s) to saved OTU tables
+#' @export
 saveTaxonomyTables <- function(tables, sample.names) {
   # Initialize list
   pathsToOTUs <- vector("character", length = length(tables))
@@ -22,7 +29,7 @@ saveTaxonomyTables <- function(tables, sample.names) {
      pathsToOTUs[i] <- f.print
 
      # Save file
-     write.table(new.table, file = f.print)
+     write.table(new.table, file = f.print, sep = "\t")
 
      # Increment counter
      i <- i + 1
