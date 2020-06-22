@@ -1,19 +1,23 @@
-removeChimeras <- function(seqtab) {
+#' Remove Chimeric Sequences
+#' Enables the use of DADA2's isBimeraDenovoTable and/or removeBimeraDenovo functions. 
+#' @param seqtab Frequency table(s) returned from makeSeqsTable function
+#' @export
+removeChimeras <- function(seqtab, object) {
   # Load required libraries
   # Determine if chimera detection table is created
   # (i.e. Identified chimeric sequences are not removed but are labeled)
   # Allows user to be able to review flagged sequences to verify chimeric characteristics
-  if (options$createChimeraDetectionTable == TRUE) {
+  if (object@createChimeraDetectionTable == TRUE) {
     # Extract required parameters
-    minSampleFraction <- options$chimeraDetectionMinSampleFraction
-    ignoreNNegatives <- options$chimeraDetectionIgnoreNegatives
-    minFoldParentOverAbundance <- options$chimeraDetectionMinFoldParentOverabundance
-    minParentAbundance <- options$chimeraDetectionParentAbundance
-    allowOneOff <- options$chimeraDetectionAllowOneOff
-    minOneOffParentDistance <- options$chimeraDetectionMinOneOffParentDistance
-    maxShift <- options$chimeraDetectionMaxShift
-    multithread <- options$chimeraDetectionMultiThread
-    verbose <- options$chimeraDetectionVerbose
+    minSampleFraction <- object@chimeraDetectionMinSampleFraction
+    ignoreNNegatives <- object@chimeraDetectionIgnoreNegatives
+    minFoldParentOverAbundance <- object@chimeraDetectionMinFoldParentOverabundance
+    minParentAbundance <- object@chimeraDetectionParentAbundance
+    allowOneOff <- object@chimeraDetectionAllowOneOff
+    minOneOffParentDistance <- object@chimeraDetectionMinOneOffParentDistance
+    maxShift <- object@chimeraDetectionMaxShift
+    multithread <- object@chimeraDetectionMultiThread
+    verbose <- object@chimeraDetectionVerbose
 
     # Execute the function (simple)
     seqtab.chim <- dada2::isBimeraDenovoTable(seqtab, minSampleFraction= as.numeric(minSampleFraction),
@@ -27,7 +31,7 @@ removeChimeras <- function(seqtab) {
 
   } else {
     # Extract reqired parameters
-    verbose <- options$chimeraDetectionVerbose
+    verbose <- object@chimeraDetectionVerbose
 
     # Execute function
     seqtab.nochim <- dada2::removeBimeraDenovo(seqtab, method="consensus", verbose=TRUE)

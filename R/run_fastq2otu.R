@@ -6,11 +6,11 @@ NULL
 #' Execute project workflow from FASTQ input to OTU output using DADA2 Workflow
 #' 
 #' The analysis takes place in multiple steps beginning at the creation of a central output directory. Once the directory
-#' is created, a log-file is initilized that will contain all messages produces by DADA2 functions as well as a summary 
+#' is created, a log-file is initilized that will contain all messages produced by DADA2. Accompanying the log file is a summary 
 #' table documenting changes in read frequency following filtering and trimming procedures. This summary table can be used 
 #' as a reference when determining the best way to modify different parameters input into the different functions.
 #'
-#' #' @param object An S4 object of type fastq2otu. The appropriate object can be created from a config file using
+#' @param object An S4 object of type fastq2otu_paired, or fastq2otu_single. The appropriate object can be created from a config file using
 #' the readConfig function (preferred method). 
 #' @export
 run_fastq2otu <- function(object) {
@@ -43,7 +43,7 @@ run_fastq2otu <- function(object) {
 		# Remove primers and update path
 		if (object@trimPrimers) {
 			message("==== Removing Primers ====")
-			fp <- removePrimers()
+			fp <- removePrimers(object)
 		} else {
 			fp <- object@inDir
 		}
@@ -51,15 +51,16 @@ run_fastq2otu <- function(object) {
 		# Run FASTQCR
 		if (object@runFastqc & !file.exists(file.path(object@pathToFastqcResults, paste0(object@projectPrefix, "_fastqc_report.html")))) {
 			message("==== Generating FASTQC Files for Data====")
-			results <- fastqcr(fp)
+			results <- runFastqcr(object, fp)
 		}
 
 		if (object@isPaired) {
 			# Extract SRA sample ids
+			# TODO: Change so user can enter his/her own pattern for file extensions
 			sample.names <- sapply(strsplit(basename(sort(list.files(fp, pattern = "*_1.fastq(.gz)?$", full.names = TRUE))), "*_1.fastq(.gz)?$"), `[`, 1)
 			
 			# === Analyze as paired-end data ===
-			amplicons <- paired_analysis(fp, sample.names)
+			amplicons <- paired_analysis(fp, sample.names, object)
 			
 			# Generate read frequency tables
 			freq.seqtabs <- mapply(makeSeqsTable, dadaObj=amplicons, sample.name=sample.names, SIMPLIFY = FALSE)
@@ -69,7 +70,7 @@ run_fastq2otu <- function(object) {
 			sample.names <- sapply(strsplit(basename(sort(list.files(fp, pattern = "*.fastq(.gz)?$", full.names = TRUE))), "*.fastq(.gz)?$"), `[`, 1)
 			
 			# === Analyze as single-end data ===
-			amplicons <- single_analysis(fp, sample.names)
+			amplicons <- single_analysis(fp, sample.names, object)
 			
 			# Generate read frequency tables
 			freq.seqtabs <- mapply(makeSeqsTable, dadaObj=amplicons, sample.name=sample.names, SIMPLIFY = FALSE)
@@ -78,28 +79,30 @@ run_fastq2otu <- function(object) {
 		# Remove or Label Chimeric Sequences
 		message("==== Finding Chimeric Sequences ====")
 		# Get sequences
-		seqtabs.nochim <- lapply(freq.seqtabs, removeChimeras)
+		seqtabs.nochim <- mapply(removeChimeras, seqtab=freq.seqtabs, object=object, SIMPLIFY = FALSE)
 
 		# Save Sequence Tables
 		message("==== Saving Sequence Tables ====")
 		message("If the option to create a Chimera Detection Table is true (refer to config file), then two versions of the sequence table will be saved.")
-		if (as.logical(options$createChimeraDetectionTable) == TRUE) {
-			saveSeqs(seqtabs.nochim, sample.names) # Slightly modified file name will be used
+		if (as.logical(object@createChimeraDetectionTable) == TRUE) {
+			saveSeqs(seqtabs.nochim, sample.names, object@outDir) # Slightly modified file name will be used
 			seqtabs.nochim <- freq.seqtabs # Replace with integer table
 		}
 		pathToSeqTables <- saveSeqs(seqtabs.nochim, sample.names)
 
 		# Assign Taxonomy
 		message("==== Assigning Taxa ====")
-		otuTabs <- lapply(freq.seqtabs, assignSeqTaxonomy)
+		otuTabs <- mapply(assignSeqTaxonomy, seqtab=freq.seqtabs, object=object, SIMPLIFY = FALSE)
 
 		# Save OTU Tables
 		message("==== Saving OTU Tables ====")
 		pathToOTUTables <- saveTaxonomyTables(otuTabs, sample.names)
 		
 		# Merge tables
-		message("==== Merging Tables ====")
-		finalTable <- mergeSamples(pathToOTUTables, pathToSeqTables)
+		if (object@mergeSamples) {
+			message("==== Merging Tables ====")
+			finalTable <- mergeSamples(pathToOTUTables, pathToSeqTables, object@finalMergedTable)
+		}
 
 		if (typeof(finalTable) == "character") {
 		  message("Final table was not created")
@@ -112,15 +115,9 @@ run_fastq2otu <- function(object) {
 		print("Done!")
 }
 
-single_analysis(fp, sample.names) {
+single_analysis(fp, sample.names, object) {
 	# Sort path to extract all .fastq files (external variables can be accessed)
 	Fs <- sort(list.files(fp, pattern = "*.fastq(.gz)?$", full.names = TRUE))
-
-	# Run FASTQCR then comment out section of code
-	if (options$runFastqc & !file.exists(file.path(options$pathToFastqcResults, paste0(options$projectPrefix, "_fastqc_report.html")))) {
-	message("==== Generating FASTQC Files ====")
-	results <- fastqcr(fp)
-	}
 
 	# Filter and Trim (generates "filtered_objects.RData" file)
 	message("==== Filtering and Trimming Amplicon Sequences ====")
@@ -135,10 +132,12 @@ single_analysis(fp, sample.names) {
 	errFs <- lapply(filtFs, learnSeqErrors)
 
 	# Plot Errors
-	message("==== Plotting Errors ====")
-	pdf(options$errPDF)
-		lapply(errFs, plotSeqErrors)
-	dev.off()
+	if (object@saveErrorsPlotPDF) {
+		message("==== Plotting Errors ====")
+		pdf("learned_errors_plot.pdf")
+			lapply(errFs, dada2::plotErrors)
+		dev.off()
+	}
 	
 	# Denoise Data
 	message("==== Removing Learned Errors ====")
@@ -146,29 +145,34 @@ single_analysis(fp, sample.names) {
 	
 	# Track changes
 	getSeqN <- function(x) sum(getUniques(x))
-	read.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-	read.out <- lapply(filtFs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-	track <- cbind(sample.names, read.in, read.out, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
+	if (nzchar(system.file(package = "HTSeqGenie")) {
+		read.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
+		read.out <- lapply(filtFs, HTSeqGenie::getNumberOfReadsInFASTQFile)
+		track <- cbind(sample.names, read.in, read.out, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
+	} else {
+		load("filtered_objects.RData") # Loads saveFilt object to current environment
+		track <- cbind(saveFilt, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
+	}
 	
 	# Specify column names
 	colnames(track)[4] <- "derep"
 	colnames(track)[5] <- "denoised"
 
 	# Show tracking and save to file
-	s.print <- paste0(options$projectPrefix, "_", options$finalSummaryTable, ".txt")
+	s.print <- paste0(object@projectPrefix, "_", object@finalSummaryTable, ".txt")
 	write.table(track, file = s.print, sep = "\t")
 
 	return(dadaFs)
 }
 
-paired_analysis(fp, sample.names) {
+paired_analysis(fp, sample.names, object) {
 	# Sort path to extract all .fastq files (allows .fastq, .fq or .fastq.gz file extensions)
 	Fs <- sort(list.files(fp, pattern = "*_1.fastq(.gz)?$", full.names = TRUE))
 	Rs <- sort(list.files(fp, pattern = "*_2.fastq(.gz)?$", full.names = TRUE))
 	
 	# Filter and Trim
 	message("==== Filtering and Trimming Paired-End Amplicon Sequences ====")
-	filtered.files <- mapply(filtTrim, forwardFs=Fs, reverseFs=Rs)
+	filtered.files <- mapply(filtTrim, object=object, sample.names=sample.names)
 
 	message("The filtered files")
 	lapply(sort(filtered.files), message)
@@ -184,12 +188,12 @@ paired_analysis(fp, sample.names) {
 
 	# Learn Errors
 	message("==== Learning Errors ====")
-	errFs <- lapply(filt.forward, learnSeqErrors)
-	errRs <- lapply(filt.reverse, learnSeqErrors)
+	errFs <- lapply(filt.forward, dada2::learnErrors)
+	errRs <- lapply(filt.reverse, dada2::learnErrors)
 
 	# Plot Errors
 	message("==== Plotting Errors ====")
-	pdf(options$errPDF)
+	pdf(object@errPDF)
 	  lapply(errFs, plotSeqErrors)
 	  lapply(errRs, plotSeqErrors)
 	dev.off()
@@ -202,7 +206,7 @@ paired_analysis(fp, sample.names) {
 	# Merge forward and reverse reads
 	merged_amplicons <- mapply(mergeSeqPairs, dadaFS=dadaFs, dadaRS=dadaRs, derepFS=derepFs, derepRS=derepRs, SIMPLIFY = FALSE)
 	cat(names(merged_amplicons))
-	m.print <- paste0(options$projectPrefix, "_merged_pairs_table.csv")
+	m.print <- paste0(object@projectPrefix, "_merged_pairs_table.csv")
 
 	# A large merged table is created
 	# Each table is differentiated by a prefix in the column names
@@ -217,21 +221,30 @@ paired_analysis(fp, sample.names) {
 	
 	# Count number of reads in sequences (load HTSeqGenie library)
 	getSeqN <- function(x) sum(getUniques(x))
-	forward.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-	forward.out <- lapply(filt.forward, HTSeqGenie::getNumberOfReadsInFASTQFile)
-	reverse.in <- lapply(Rs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-	reverse.out <- lapply(filt.reverse, HTSeqGenie::getNumberOfReadsInFASTQFile)
+	
 	forward.derep <- sapply(derepFs, getSeqN)
 	reverse.derep <- sapply(derepRs, getSeqN)
 	forward.dada <- sapply(dadaFs, getSeqN)
 	reverse.dada <- sapply(dadaRs, getSeqN)
 	merged <- sapply(merged_amplicons, getSeqN)
 
-	# Combine all information
-	track <- cbind(sample.names, forward.in, forward.out, reverse.in, reverse.out, forward.derep, reverse.derep, forward.dada, reverse.dada, merged)
+	if (nzchar(system.file(package = "HTSeqGenie")) {
+		forward.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
+		forward.out <- lapply(filt.forward, HTSeqGenie::getNumberOfReadsInFASTQFile)
+		reverse.in <- lapply(Rs, HTSeqGenie::getNumberOfReadsInFASTQFile)
+		reverse.out <- lapply(filt.reverse, HTSeqGenie::getNumberOfReadsInFASTQFile)
+			
+		# Combine all information
+		track <- cbind(sample.names, forward.in, forward.out, reverse.in, reverse.out, forward.derep, reverse.derep, forward.dada, reverse.dada, merged)
+	} else {
+		load("filtered_objects") # Load saveFilt obect in current environment
+		
+		# Combine all information
+		track <- cbind(sample.names, forward.in, forward.out, reverse.in, reverse.out, forward.derep, reverse.derep, forward.dada, reverse.dada, merged)
+	}
 
 	# Show tracking and save to file
-	s.print <- paste0(options$projectPrefix, "_", options$finalSummaryTable, ".txt")
+	s.print <- paste0(object@projectPrefix, "_", object@finalSummaryTable, ".txt")
 	write.table(track, file = s.print, sep = "\t")
 
 	return(merged_amplicons)	

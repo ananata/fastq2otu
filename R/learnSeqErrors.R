@@ -1,14 +1,12 @@
+#' Learn Sequence Errors
+#' Enables exection of DADA2's learnErrors functions. 
+#' Multithread and verbose parameters are true by default
+#' @param file path to FASTQ file
+#' @return error object
+#' @export
 learnSeqErrors <- function(file) {
-  # Load required libraries
-  # Read YML file (get configFile object from main.R)
-  options <- yaml.load_file(configFile)
-
-  # Extract required parameters
-  nSample <- options$errN
-  nThreads <- options$errMultithread
-
   # Execute the function
-  errF <- dada2::learnErrors(file)
+  errF <- dada2::learnErrors(file, multithread = TRUE, verbose = TRUE)
 
   # Return derep object
   return(errF)

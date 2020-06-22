@@ -1,10 +1,16 @@
-saveSeqs <- function(tables, sample.names) {
+#' Save sequence frequency tables in RDS file
+#'
+#' @param tables List of sequence frequency tables
+#' @param sample.names List of SRA/fastq file ids (extracted directly from files)
+#' @param out.dir Output directory to write RDS files
+#' @export 
+saveSeqs <- function(tables, sample.names, out.dir) {
   # Initialize a character vector
   pathsToSeqs <- vector("character", length = length(tables))
 
   # Create a directory for sequences if it does not already exist
-  if (!dir.exists(file.path(options$outDir, "sequence_tables"))) {
-    dir.create(file.path(options$outDir, "sequence_tables"))
+  if (!dir.exists(file.path(out.dir, "sequence_tables"))) {
+    dir.create(file.path(out.dir, "sequence_tables"))
   }
 
   # Save RDS files
@@ -12,9 +18,9 @@ saveSeqs <- function(tables, sample.names) {
   for (table in tables) {
      if (typeof(table) == "logical") {
        # Set .rds file name
-       seq.print <- file.path(options$outDir, "sequence_tables", paste0(i, "_", sample.names[i], "_seqtab_chimeras.rds"))
+       seq.print <- file.path(out.dir, "sequence_tables", paste0(i, "_", sample.names[i], "_seqtab_chimeras.rds"))
      } else {
-       seq.print <- file.path(options$outDir, "sequence_tables", paste0(i, "_", sample.names[i], "_seqtab.rds"))
+       seq.print <- file.path(out.dir, "sequence_tables", paste0(i, "_", sample.names[i], "_seqtab.rds"))
      }
      # Save path in list
      pathsToSeqs[i] <- seq.print

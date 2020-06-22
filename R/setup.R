@@ -7,7 +7,7 @@
 #' @return TRUE (boolean) or error message detailing source(s) of error.
 #' @export
 check_fastq2otu <- function(object) {
-  	errors <- character()
+ 	errors <- character()
   	if (!file.exists(object@taxDatabase)) {
     		msg <- paste("Provided input: ", object@taxDatabase, " is invalid and does not exist", sep = "")
     		errors <- c(errors, msg)
@@ -108,7 +108,7 @@ setClass("fastq2otu",
 			# === Detect and learn error patterns in sequences ===
 			errN = "numeric",
 			errMultithread = "numeric",
-			learnErrorsPlotPDF = "numeric",
+			saveErrorsPlotPDF = "logical",
 
 			# === Denoise data ===
 			dadaBandSize = "numeric",
@@ -171,7 +171,7 @@ setClass("fastq2otu",
 
 			errN = 1e+08,
 			errMultithread = 4,
-			learnErrorsPlotPDF = "learn_errors_plot.pdf",
+			saveErrorsPlotPDF = FALSE,
 
 			dadaBandSize = 16,
 			dadaOmegaA = 1e-40,

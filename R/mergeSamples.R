@@ -1,4 +1,9 @@
-mergeSamples <- function(otutabs, seqtabs) {
+#' Merge OTU tables from different samples
+#' @param otutabs List of path(s) to OTU tables
+#' @param seqtabs List of path(s) to frequency tables
+#' @param final.print Name of file to save. 
+#' @return Merged table that can be used to complete cross sample comparisons
+mergeSamples <- function(otutabs, seqtabs, final.print = "final_merged_table.csv") {
   # Load required libraries
   # Verify that sequence tables correspond to OTU tables
   otuLabels <- as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.csv'), '[', 1))
@@ -9,7 +14,7 @@ mergeSamples <- function(otutabs, seqtabs) {
   }
 
   # Read sequence tables into R
-  seqtab.list <- lapply(mixedsort(seqtabs), readRDS)
+  seqtab.list <- lapply(gtools::mixedsort(seqtabs), readRDS)
 
   # Merge seqtab.list (produces WIDE matrix)
   mergedSeqs <- dada2::mergeSequenceTables(tables = seqtab.list)
@@ -45,18 +50,13 @@ mergeSamples <- function(otutabs, seqtabs) {
   s2 <- mergedSeqs$Sequences[j] == mergedOTU$Sequences[j]
 
   # Check that both tests (s1 and s2) yielded 'TRUE'
-  if (all(s1, s2)) {
-    print("You may begin merging")
-  } else {
+  if (!all(s1, s2)) {
     return("You can not merge across")
   }
 
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
   final.tab <- mergedOTU[ , 1:length(byCols)]
   final.tab <- cbind(final.tab, mergedSeqs[match(mergedOTU$Sequences, mergedSeqs$Sequences), 2:ncol(mergedSeqs)])
-
-  # Save final table
-  final.print <- options$finalMergedTable
 
   # Write the table to file
   write.table(final.tab, file = final.print, sep = "\t")
