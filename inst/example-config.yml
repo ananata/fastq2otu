@@ -1,0 +1,89 @@
+# Use as template - maintain format (i.e. white spaces) to avoid parsing errors
+
+# Required Inputs
+isPaired: true
+taxDatabase: path/to/ref
+pathToSingleData: path/to/data
+pathToPairedData: path/to/data
+projectPrefix: myproject
+outDir: path/to/project/dir
+
+# Running fastq-dump
+runFastqDump: false
+pathToSampleIDs: path/to/SRR_Acc_List.txt
+
+# Trimming Primers (for bbduk.sh) - Optional
+trimPrimers: false
+listOfAdapters: path/to/adapters.fa
+pathToRawFastq: path/to/raw_fastq/
+pathToNoPrimers: path/to/noprimer_seqs/
+
+# Running FASTQC
+runFastqc: true
+pathToFastqcResults: path/to/fastqc_results
+fastqcThreads: 4
+fastqcExperimentDescription: "16S rRNA amplicon data"
+
+# Summary Documents (Do not include file extensions)
+finalSummaryTable: final_summary_table
+
+# plotQuality - Optional
+plotQuality: false
+qualityPlotPDF: quality_plots.pdf
+
+# qualityFiltering
+# Two values expected for paired-end data (i.e. [2.5, 2.5])
+filtMaxEE: 2.5
+filtTruncQ: 0
+filtTruncLen: 0
+filtTrimLeft: 0
+filtTrimRight: 0
+filtMultiThread: 0 
+filtVerbose: true
+filtMatchIDs: false
+filtMinLen: 50
+
+# Dereplication
+derepVerbose: true
+derepN: 1e+06
+
+# Learning Errors
+errN: 1e+08 
+errMultithread: 4
+learnErrorsPlotPDF: "learn_errors_plot.pdf"
+
+# Denoising
+dadaBandSize: 16
+dadaOmegaA: 1e-40 
+
+# Chimera Detection
+createChimeraDetectionTable: true
+chimeraDetectionMinSampleFraction: 0.9
+chimeraDetectionIgnoreNegatives: 1
+chimeraDetectionMinFoldParentOverabundance: 1.5
+chimeraDetectionParentAbundance: 2
+chimeraDetectionAllowOneOff: false
+chimeraDetectionMaxShift: 16
+chimeraDetectionMultiThread: false
+chimeraDetectionVerbose: false
+
+# Merge Paired-end Reads
+mergePairs: false
+mergePairsTrimOverhang: true
+mergePairsMinOverlap: 12
+mergePairsMaxMismatch: 0
+mergePairsReturnRejects: false
+mergePairsJustConcatenate: false
+mergePairsVerbose: false
+
+# Assign Taxonomy
+assignTaxMinBootstrap: 50
+assignTaxTryComplment: false
+assignTaxOutputBootstraps: false
+assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+assignTaxMultiThread: false
+assignTaxVerbose: true
+
+# Merging
+mergeSamples: false
+finalMergedTable: final_merged_table.csv
