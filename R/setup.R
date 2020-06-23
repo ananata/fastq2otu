@@ -72,22 +72,22 @@ setClass("fastq2otu",
 			taxDatabase = "character",
 			projectPrefix = "character",
 			outDir = "character",
+			isPaired = "logical", 
 
 			# === Use Fastq-dump to download SRA data ===
 			pathToSampleIDs = "character",
 			runFastqDump = "logical",
-			pathToFastqDump = "character",
-			retrieveSRAData = "character",
-
+			
 			# === Trim primers with bbduk.sh ===
 			trimPrimers = "logical"
 			listOfAdapters = "character",
 			pathToRawFastq = "character",
 			pathToNoPrimers = "character",
-			pathToUseBBDuk = "character",
 			
 			# === Use Fastqc to generate data report ===
 			runFastqc = "logical",
+			installFastqc = "logical", 
+			pathToFastqc = "character", 
 			pathToFastqcResults = "character",
 			fastqcThreads = "numeric",
 			fastqcExperimentDescription = "character",
@@ -97,8 +97,6 @@ setClass("fastq2otu",
                       
 			# === Generate a quality plot ===
 			plotQuality = "logical",
-			aggregate = "logical",
-			sampleSize = "numeric",
 			qualityPlotPDF = "character",
 
 			# === Dereplicate reads to keep only unique sequences ===
@@ -121,7 +119,6 @@ setClass("fastq2otu",
 			chimeraDetectionMinFoldParentOverabundance = "numeric",
 			chimeraDetectionParentAbundance = "numeric",
 			chimeraDetectionAllowOneOff = "logical",
-			chimeraDetectionMinOneOffParentDistance = "numeric",
 			chimeraDetectionMaxShift = "numeric",
 			chimeraDetectionMultiThread = "logical",
 			chimeraDetectionVerbose = "logical",
@@ -142,19 +139,19 @@ setClass("fastq2otu",
 			taxDatabase = "NA_character_",
 			projectPrefix = "myproject",
 			outDir = "NA_character_",
+			isPaired = FALSE, 
 
 			pathToSampleIDs = "NA_character_",
 			runFastqDump = FALSE,
-			pathToFastqDump = "NA_character_",
-			retrieveSRAData = "NA_character_",
 
 			trimPrimers = FALSE
 			listOfAdapters = "NA_character_",
 			pathToRawFastq = "NA_character_",
 			pathToNoPrimers = "NA_character_",
-			pathToUseBBDuk = "NA_character_",
 
 			runFastqc = FALSE,
+			installFastqc = FALSE, 
+			pathToFastqc = "NA_character_", 
 			pathToFastqcResults = "NA_character_",
 			fastqcThreads = 4,
 			fastqcExperimentDescription = "NA_character_",
@@ -162,8 +159,6 @@ setClass("fastq2otu",
 			finalSummaryTable = "final_summary_table.txt",
 
 			plotQuality = TRUE,
-			aggregate = TRUE,
-			sampleSize = 1e+05,
 			qualityPlotPDF = "quality_plots.pdf",
 
 			derepVerbose = TRUE,
@@ -182,7 +177,6 @@ setClass("fastq2otu",
 			chimeraDetectionMinFoldParentOverabundance = 1.5,
 			chimeraDetectionParentAbundance = 2,
 			chimeraDetectionAllowOneOff = FALSE,
-			chimeraDetectionMinOneOffParentDistance = 4,
 			chimeraDetectionMaxShift = 16,
 			chimeraDetectionMultiThread = TRUE,
 			chimeraDetectionVerbose = TRUE,
@@ -354,8 +348,7 @@ setClass("fastq2otu_paired",
 #' @export
 #' 
 fastq2otu_paired <- function(in_dir, database, out_dir, isPaired = TRUE, prefix = "myproject",
-							run_fastq_dump = FALSE, id_list = NA, fastq_dump = NA, get_fastq_script = NA, 
-							trim_primers = FALSE, adapter.list = NA, raw_data = NA, bbduk_script = NA,
+							run_fastq_dump = FALSE, id_list = NA, trim_primers = FALSE, adapter.list = NA, raw_data = NA, 
 							max_err = c(2.5, 2.5), trunc_qual = c(0, 0), trim_length = c(0, 0), trim_left = c(0, 0), trim_right = c(0, 0), min_length = c(50, 50), 
 							merge_pairs = FALSE, min_overlap = 12 , max_mismatch = 0, return_rejects = FALSE, just_concatenate = FALSE, 
 							run_fastqc = NA, fastqc_out = NA, final_summary_table = "seq_filter_log.txt", plot_quality = TRUE, plot_pdf = "quality_plots.pdf", err_pdf = "learn_errors_plots.pdf", dada_bandsize =16,
@@ -371,13 +364,11 @@ fastq2otu_paired <- function(in_dir, database, out_dir, isPaired = TRUE, prefix 
 		outDir = out_dir,
 
 		pathToSampleIDs = id_list,
-		runFastqDump = fastq_dump,
-		retrieveSRAData = get_fastq_script,
+		runFastqDump = run_fastq_dump,
 
 		trimPrimers = trim_primers,
 		listOfAdapters = adapter_list,
 		pathToRawFastq = raw_data,
-		pathToUseBBDuk = bbduk_script,
 
 		filtMaxEE = max_err,
 		filtTruncQ = trunc_qual,
@@ -483,11 +474,10 @@ fastq2otu_paired <- function(in_dir, database, out_dir, isPaired = TRUE, prefix 
 #  @return S4 object of type fastq2otu_single
 #' @export
 fastq2otu_single <- function(function(in_dir, database, out_dir, isPaired = TRUE, prefix = "myproject",
-							run_fastq_dump = FALSE, id_list = NA, fastq_dump = NA, get_fastq_script = NA, 
-							trim_primers = FALSE, adapter_list = NA, raw_data = NA, bbduk_script = NA,
+							run_fastq_dump = FALSE, id_list = NA, trim_primers = FALSE, adapter_list = NA, raw_data = NA, 
 							max_err = 2.5, trunc_qual = 0, trim_length = 0, trim_left = 0, trim_right = 0, min_length = 50, 
-							run_fastqc = NA, fastqc_out = NA, final_summary_table = "seq_filter_log.txt", plot_quality = TRUE, plot_pdf = "quality_plots.pdf", err_pdf = "learn_errors_plots.pdf", dada_bandsize =16,
-							dada_omegaA = 1e-10, chimera_dectection_table = FALSE, chimera_min_detection = 0.9, chimera_ignore_negatives = 1, chimera_minfold_parent_overabundance = 1.5, 
+							run_fastqc = NA, fastqc_out = NA, final_summary_table = "seq_filter_log.txt", plot_quality = TRUE, plot_pdf = "quality_plots.pdf", err_pdf = "learn_errors_plots.pdf", 
+							dada_bandsize =16, dada_omegaA = 1e-10, chimera_dectection_table = FALSE, chimera_min_detection = 0.9, chimera_ignore_negatives = 1, chimera_minfold_parent_overabundance = 1.5, 
 							chimera_dectection_parent_abundance = 2, chimera_allow_one_off = FALSE, chimera_max_shift = 4, 
 							assign_tax_levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"), assign_tax_min_bootstrap = 50, assign_tax_try_complement = TRUE,
 							merge_samples = TRUE, final_merged_table = "final_merged_table.csv") {
