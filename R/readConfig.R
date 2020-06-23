@@ -25,14 +25,11 @@ readConfig <- function(configFile) {
 
 					pathToSampleIDs = options$pathToSampleIDs,
 					runFastqDump = options$runFastqDump,
-					pathToFastqDump = options$pathToFastqDump,
-					retrieveSRAData = options$retrieveSRAData,
 
 					trimPrimers = options$trimPrimers,
 					listOfAdapters = options$listOfAdapters,
 					pathToRawFastq = options$pathToRawFastq,
 					pathToNoPrimers = options$pathToNoPrimers,
-					pathToUseBBDuk = options$pathToUseBBDuk,
 
 					filtMaxEE = options$filtMaxEE,
 					filtTruncQ = options$filtTruncQ,
@@ -60,8 +57,6 @@ readConfig <- function(configFile) {
 					finalSummaryTable = options$finalSummaryTable,
 
 					plotQuality = options$plotQuality,
-					aggregate = options$aggregate,
-					sampleSize = options$sampleSize,
 					qualityPlotPDF = options$qualityPlotPDF,
 
 					derepVerbose = options$derepVerbose,
@@ -80,7 +75,6 @@ readConfig <- function(configFile) {
 					chimeraDetectionMinFoldParentOverabundance = options$chimeraDetectionMinFoldParentOverabundance,
 					chimeraDetectionParentAbundance = options$chimeraDetectionParentAbundance,
 					chimeraDetectionAllowOneOff = options$chimeraDetectionAllowOneOff,
-					chimeraDetectionMinOneOffParentDistance = options$chimeraDetectionMinOneOffParentDistance,
 					chimeraDetectionMaxShift = options$chimeraDetectionMaxShift,
 					chimeraDetectionMultiThread = options$chimeraDetectionMultiThread,
 					chimeraDetectionVerbose = options$chimeraDetectionVerbose,
@@ -103,14 +97,11 @@ readConfig <- function(configFile) {
 
 					pathToSampleIDs = options$pathToSampleIDs,
 					runFastqDump = options$runFastqDump,
-					pathToFastqDump = options$pathToFastqDump,
-					retrieveSRAData = options$retrieveSRAData,
 
 					trimPrimers = options$trimPrimers,
 					listOfAdapters = options$listOfAdapters,
 					pathToRawFastq = options$pathToRawFastq,
 					pathToNoPrimers = options$pathToNoPrimers,
-					pathToUseBBDuk = options$pathToUseBBDuk,
 
 					filtMaxEE = options$filtMaxEE,
 					filtTruncQ = options$filtTruncQ,
@@ -130,8 +121,6 @@ readConfig <- function(configFile) {
 					finalSummaryTable = options$finalSummaryTable,
 
 					plotQuality = options$plotQuality,
-					aggregate = options$aggregate,
-					sampleSize = options$sampleSize,
 					qualityPlotPDF = options$qualityPlotPDF,
 
 					derepVerbose = options$derepVerbose,
@@ -150,7 +139,6 @@ readConfig <- function(configFile) {
 					chimeraDetectionMinFoldParentOverabundance = options$chimeraDetectionMinFoldParentOverabundance,
 					chimeraDetectionParentAbundance = options$chimeraDetectionParentAbundance,
 					chimeraDetectionAllowOneOff = options$chimeraDetectionAllowOneOff,
-					chimeraDetectionMinOneOffParentDistance = options$chimeraDetectionMinOneOffParentDistance,
 					chimeraDetectionMaxShift = options$chimeraDetectionMaxShift,
 					chimeraDetectionMultiThread = options$chimeraDetectionMultiThread,
 					chimeraDetectionVerbose = options$chimeraDetectionVerbose,
