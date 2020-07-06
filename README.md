@@ -2,29 +2,66 @@
 
 FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing, and processing microbiome rRNA gene data obtained from NCBI's SRA database. The package uses many functions from [DADA2](https://github.com/benjjneb/dada2 "Github") to analyze sequence data. The primary objective of FASTQ2OTU is to (1) increase the reproducibility of microbiome analysis and (2) encourage the analysis of archived data to obtain new knowledge. 
 
-
+FASTQ2OTU's workflow can be broken down into 
 #### Advantages of using FASTQ2OTU
 * ###### Documentation is simplified
+* ###### Integrated workflow
 * ###### Outputs are automatically generated
 * ###### Easy to use
 
 ## Quick Start Guide
 
-#### Example
+#### Directory Overview
+```
+fastq2otu:.
+|   DESCRIPTION
+|   fastq2otu.Rproj
+|   NAMESPACE
+|   README.md
+|
++---data
++---exec
+|       bbduk.sh
+|       fastq-dump
+|       retrieve_sra_sequences.sh
+|       use_bbduk.sh
+|
++---inst
+|       bbduk_LISCENSE
+|       example-config.yml
+|       fastq-dump_LISCENSE
+|
+\---R
+        assignSeqTaxonomy.R
+        dadaSeqs.R
+        filtTrim.R
+        getRowSums.R
+        getSeqs.R
+        learnSeqErrors.R
+        makeSeqsTable.R
+        mergeSamples.R
+        mergeSeqPairs.R
+        plotQuality.R
+        readConfig.R
+        removeChimeras.R
+        removePrimers.R
+        runFastqc.R
+        run_fastq2otu.R
+        saveSeqs.R
+        saveTaxonomyTables.R
+        setup.R
+```
+For navigation purposes, the above diagram has been provided as a general schematic of all the files and sub-directories located within the FASTQ2OTU package. 
+
+#### Demo Files
 ```
 # Load package into environoment
 library("ananata/fastq2otu")
 
-// TODO: Add sample data as extdata
-configFile <- "path/to/config.yml"
-
-# Create custom object with file
-myParams <- readConfig(configFile)
-
-# Execute project workflow
-run_fastq2otu(myParams)
-
+// Run demo
+runDemo()
 ```
+The `runDemo()` function will execute the entire pipeline on a set of a sample data. The example datasets (including config file) can be viewed in the `inst/` directory (TODO), and output files will be written to the user's current working directory. 
 
 ## Getting Started
 After installing FASTQ2OTU, the following input files and/or directories will be required to begin processing data:
@@ -41,7 +78,7 @@ After installing FASTQ2OTU, the following input files and/or directories will be
 
 ### Installation
 
-This application is designed to be lightweight and simple to use.  The intended use is via a remote server, however it can also be run using RStudio (the package was written in R 3.5.3) and can be downloaded from Github using [devtools](https://github.com/r-lib/devtools). 
+This application is designed to be lightweight and simple to use. The intended use is via a remote server, however it can also be run using RStudio (the package was written in R 3.5.3) and can be downloaded from Github using [devtools](https://github.com/r-lib/devtools). 
 
 ```
 # Install devtools 
