@@ -4,10 +4,10 @@ FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing,
 
 FASTQ2OTU's workflow can be broken down into 
 #### Advantages of using FASTQ2OTU
-* ###### Documentation is simplified
-* ###### Integrated workflow
-* ###### Outputs are automatically generated
-* ###### Easy to use
+* ##### Documentation is simplified
+* ##### Integrated workflow
+* ##### Outputs are automatically generated
+* ##### Easy to use
 
 ## Quick Start Guide
 
@@ -94,10 +94,90 @@ library("ananata/fastq2otu")
 
 #### Using a config file
 
-The user can set several parameters using environment variables passed into the container at runtime. The environment variables that can be passed are as follows:
-
 | Variable        | Type           | Default  | Description |
-| --------------- |:--------------:|:--------:|-------------|
+| --------------- |--------------:|:--------:|-------------|
+| projectPrefix ||||
+| outDir ||||
+| pathToData ||||
+| isPaired |||| 
+| listOfAdapters ||||
+| pathToRawFastq ||||
+| pathToNoPrimers ||||
+| aggregateQual ||||
+| qualN||||
+|runFastqDump: false
+pathToSampleIDs: path/to/SRR_Acc_List.txt
+runFastqc: true
+pathToFastqcResults: path/to/fastqc_results
+fastqcThreads: 4
+fastqcExperimentDescription: "16S rRNA amplicon data"
+
+# === Create summary table that displays changes to total read counts ===
+finalSummaryTable: filt_summary_table.csv
+
+# === Dereplicate reads to keep only unique sequences ===
+derepVerbose: false
+derepN: 1e+06
+
+# === Detect and learn error patterns in sequences ===
+errN: 1e+08
+errMultithread: false
+saveErrorsPlot: false
+
+# === Denoise data ===
+dadaBandSize: 16
+dadaOmegaA: 1e-40
+
+# === Find chimeric sequences ===
+createChimeraDetectionTable: false
+chimeraDetectionMinSampleFraction: 0.9
+chimeraDetectionIgnoreNegatives: 1
+chimeraDetectionMinFoldParentOverabundance: 1.5
+chimeraDetectionParentAbundance: 2
+chimeraDetectionAllowOneOff: false
+chimeraDetectionMaxShift: 16
+chimeraDetectionMultiThread: false
+chimeraDetectionVerbose: false
+
+# === Filtering (Single-end data example)
+filtMaxEE: 2.5
+filtTruncQ: 0
+filtTruncLen: 0
+filtTrimLeft: 0
+filtTrimRight: 0
+filtMultiThread: true
+filtVerbose: true
+filtMatchIDs: false
+filtMinLen: 50
+
+# === Filtering (Paired-end data example)
+filtMaxEE: [2.5, 2.5]
+filtTruncQ: [0, 0]
+filtTruncLen: [0, 0]
+filtTrimLeft: [0, 0]
+filtTrimRight: [0, 0]
+filtMultiThread: true
+filtVerbose: true
+filtMatchIDs: false
+filtMinLen: [50, 50]
+
+# === Merge Paired-end Reads ===
+mergePairs: false
+mergePairsTrimOverhang: true
+mergePairsMinOverlap: 12
+mergePairsMaxMismatch: 0
+mergePairsReturnRejects: false
+mergePairsJustConcatenate: false
+mergePairsVerbose: false
+
+# === Assign Taxonomy ===
+taxDatabase: path/to/ref
+assignTaxMinBootstrap: 50
+assignTaxTryComplement: false
+assignTaxOutputBootstraps: false
+assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
+assignTaxMultiThread: true
+assignTaxVerbose: true
 
 #### Package Walkthrough
 

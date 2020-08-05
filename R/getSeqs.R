@@ -7,8 +7,8 @@ getSeqs <- function(object) {
   # Extract required inputs
   fDumpScript <- system.file("exec", "fastq_dump", package = "fastq2otu")
   retrieveSRAData <- system.file("exec", "retrieve_sra_sequences.sh", package = "fastq2otu")
-  sraList <- object@pathToSamples
-  output <- object@pathToPairedData
+  sraList <- object@pathToSampleIDs
+  output <- object@pathToData
 
   # Check to see if path exists
   if (!dir.exists(output)) {
