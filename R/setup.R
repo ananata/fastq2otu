@@ -27,12 +27,12 @@
 check_fastq2otu <- function(object) {
 	errors <- character()
 		length_input <- length(object@pathToData)
-	if (length_input == 0) {
+	if (length_input == 0) { # checks for empty strings
 		msg <- paste("No input provided for pathToData. A value is required")
 		errors <- c(errors, msg)
 	}
-	else if (!dir.exists(object@pathToData)) {
-		msg <- paste("Provided input: ", object@pathToData, " is invalid and does not exist", sep = "")
+	else if (!is.na(object@pathToData) & !dir.exists(object@pathToData)) {
+		msg <- paste("Provided input for pathToData: ", object@pathToData, " is invalid and does not exist", sep = "")
 		errors <- c(errors, msg)
 	}
 	
@@ -41,7 +41,7 @@ check_fastq2otu <- function(object) {
 		msg <- paste("No input provided for outDir. A value is required")
 		errors <- c(errors, msg)
 	}
-	else if (!dir.exists(object@outDir)) {
+	else if (!is.na(object@pathToData) & !dir.exists(object@outDir)) {
 		msg <- paste("Provided input: ", object@outDir, " is invalid and does not exist", sep = "")
 		errors <- c(errors, msg)
 	}
@@ -170,7 +170,7 @@ check_seq_dump <- function(object) {
 check_assign_tax <- function(object) {
 	errors <- c()
 	if (!file.exists(object@taxDatabase)) {
-		if (is.na(object@taxDatabase) | object@taxDatabase == "NA_character_" | length(object@taxDatabase) == 0 ) {
+		if (is.na(object@taxDatabase) | length(object@taxDatabase) == 0 ) {
 			msg <- ("No path to reference database provided.")
 			errors <- c(errors, msg)
 		} else {
@@ -229,7 +229,7 @@ setClass("fastq2otu",
 			),
 		prototype = list(
 				projectPrefix = "myproject",
-				outDir = "NA_character_",
+				outDir = NA_character_,
 				isPaired = FALSE, 
 
 				downloadSeqs = FALSE, 
@@ -270,7 +270,7 @@ setClass("fastSingle",
 				pathToData = "character"
 			),
 			prototype = list(
-				pathToData = "NA_character_"
+				pathToData = NA_character_
 			),
 			contains = "fastq2otu",
 			validity = check_fastq2otu)
@@ -295,7 +295,7 @@ setClass("fastPaired",
 				mergeSeqPairsVerbose = "logical"
 			),
 			prototype = list(
-				pathToData = "NA_character_",
+				pathToData = NA_character_,
 											
 				doMergeSeqPairs = FALSE,
 				mergeSeqPairsTrimOverhang = FALSE,
@@ -363,7 +363,7 @@ setClass("fastAssignTaxa",
 				assignTaxMultiThread = "logical",
 				assignTaxVerbose = "logical"),
 			prototype = list(
-				taxDatabase = "NA_character_",
+				taxDatabase = NA_character_,
 				assignTaxMinBootstrap = 50,
 				assignTaxTryComplement = FALSE,
 				assignTaxOutputBootstraps = FALSE,
@@ -408,10 +408,10 @@ setClass("fastSeqDump",
 				pathToSampleIDs = "character",
 				pathToFastqDump = "character"),
 			prototype = list(
-				outDir = "NA_character_",
-				pathToSampleURLs = "NA_character_",
-				pathToSampleIDs = "NA_character_",
-				pathToFastqDump = "NA_character_"),
+				outDir = NA_character_,
+				pathToSampleURLs = NA_character_,
+				pathToSampleIDs = NA_character_,
+				pathToFastqDump = NA_character_),
 			contains = "fastq2otu",
 			validity = check_seq_dump
 		)
@@ -434,9 +434,9 @@ setClass("fastPrimerTrim",
 				pathToNoPrimers = "character"),
 			prototype = list(
 				trimPrimers = FALSE,
-				listOfAdapters = "NA_character_",
-				pathToRawFastq = "NA_character_",
-				pathToNoPrimers = "NA_character_"),
+				listOfAdapters = NA_character_,
+				pathToRawFastq = NA_character_,
+				pathToNoPrimers = NA_character_),
 			contains = c("fastSingle", "fastPaired")
 		)
 
@@ -461,10 +461,10 @@ setClass("fastReport",
 			prototype = list(
 				runFastqc = FALSE,
 				installFastqc = FALSE, 
-				pathToFastqc = "NA_character_", 
-				pathToFastqcResults = "NA_character_",
+				pathToFastqc = NA_character_, 
+				pathToFastqcResults = NA_character_,
 				fastqcThreads = 4,
-				fastqcExperimentDescription = "NA_character_"),
+				fastqcExperimentDescription = NA_character_),
 			contains = "fastq2otu"
 		)
 
