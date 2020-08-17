@@ -28,7 +28,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 					minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50), 
 					tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
 					showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
-					taxLevels = ifelse(!is.null(options$assignTaxLevels), options$assignTaxLevels, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
+					taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
 					verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE), 
 					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
 		} 
@@ -61,7 +61,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 						minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
 						tryComplement = ifelse(!is.null(options$assignTaxTryComplement), as.numeric(as.character(options$assignTaxTryComplement)), FALSE), 
 						showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
-						taxLevels = ifelse(!is.null(options$assignTaxLevels), options$assignTaxLevels, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")))
+						taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")))
 		}
 		else {
 			stop("Invalid input provided for type parameter")
@@ -176,7 +176,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 						minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
 						tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
 						showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
-						taxLevels = ifelse(!is.null(options$assignTaxLevels), options$assignTaxLevels, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
+						taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
 						verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE), 
 						multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
 		}
@@ -204,7 +204,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 								minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
 								tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
 								showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
-								taxLevels = ifelse(!is.null(options$assignTaxLevels), options$assignTaxLevels, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
+								taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
 								verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE), 
 								multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
 		}

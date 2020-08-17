@@ -83,18 +83,8 @@ mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
 
 # === Assign Taxonomy ===
-taxDatabase: C:/Users/twuma/Downloads/silva_v138_lpsn_accession_matches_v1v4_primersearched_taxa.fa
+taxDatabase: C:/Users/twuma/OneDrive/Documents/R/win-library/4.0/dada2/extdata/example_train_set.fa.gz
 assignTaxMinBootstrap: 50
 assignTaxTryComplement: false
 assignTaxOutputBootstraps: false
 assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
-
-
-
-
-
-
-
-
-
-
