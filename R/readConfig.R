@@ -19,7 +19,7 @@ readConfig <- function(configFile) {
 	if (options$isPaired) {
 		temp <- new("fastq2otu_paired", 
 					taxDatabase = options$taxDatabase,
-					pathToPairedData = options$pathToPairedData,
+					pathToPairedData = options$pathToData,
 					projectPrefix = options$projectPrefix,
 					outDir = options$outDir,
 

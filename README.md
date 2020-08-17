@@ -47,7 +47,7 @@ This application is designed to be lightweight and simple to use.  The intended 
 # Install devtools 
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
-devtools::install("ananata/fastq2otu")
+devtools::install_github("ananata/fastq2otu")
 
 # Load package into environoment
 library("ananata/fastq2otu")
@@ -61,6 +61,17 @@ The user can set several parameters using environment variables passed into the 
 
 | Variable        | Type           | Default  | Description |
 | --------------- |:--------------:|:--------:|-------------|
+|taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
+|isPaired|Logical| FALSE | Required. Determine whether input sequences are single (FALSE) or paired-end (TRUE) |
+|pathToData|Character| N/A | Required. Path to directory containing input FASTQ files. For paired-end data, files containing forward or reverse reads must be in the same directory path. | 
+|projectPrefix|Character|myproject| Unique identifier to label output files generated from workflow.
+|outDir|Character|Current working directory|Path to output directory that the contain all output files and documents. |
+|runFastqDump|Logical|FALSE|Determines whether fastq-dump should be executed. |
+|pathToSampleIDs|Character|N/A|Required if runFastqDump is TRUE. Path to a list of SRA Accession ids to be downloaded using [fastq-dump](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=fastq-dump).|
+|trimPrimers|Logical|FALSE|Determines whether bbduk.sh should be executed to trim all adapters present on input FASTQ files |
+|listOfAdapters|Character|N/A|Required if trimPrimers is TRUE. Path to a list of adapter sequence to be removed using [bbduk.sh](https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/)|
+|pathToRawFastq|Character|N/A|Required if trimPrimers is TRUE. Path to directory containing untrimmed sequences. |
+|// TODO...||
 
 #### Package Walkthrough
 
@@ -91,4 +102,5 @@ We would like to thank the following, without whom this would not have happened:
 * Virginia Commonwealth University
 
 ---------------------------------------------------------------------------------------------------------------------
+
 
