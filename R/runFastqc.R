@@ -11,12 +11,6 @@ runFastqc <- function(object, path) {
 	fastqc_path <- object@pathToFastqc
 	install_fastqc <- object@installFastqc
 
-	if (install_fastqc & is.na(fastqc_path)) {
-		# Install fastqc at "~/bin/FastQC/fastqc"
-		fastqcr::fastqc_install()
-		fastqc_path <- "~/bin/FastQC/fastqc"
-		message("FASTQC was successfully installed at: " fastqc_path)
-	}
 	if (install_fastqc & !is.na(fastqc_path)) {
 		# Install fastqc at user-specfied destination
 		# Error message is returned if platform is not Unix/Linux based
@@ -25,8 +19,13 @@ runFastqc <- function(object, path) {
 		} else { 
 			fastqcr::fastqc_install(dest.dir = fastqc_path) 
 		}
-		message("FASTQC was successfully installed at: " fastqc_path)
+		message("FASTQC was successfully installed at: ", fastqc_path)
+	} 
+	
+	if (install_fastqc & is.null(fastqc_path)) {
+		stop("Unable to install FASTQC. Please provide output directory/path")
 	}
+	
 	# Run FASTQC to obtain results
 	fastqcr::fastqc(fq.dir = path, qc.dir = output, threads = nThreads, fastqc.path = fastqc_path)
 

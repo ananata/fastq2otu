@@ -1,89 +1,100 @@
-# Use as template - maintain format (i.e. white spaces) to avoid parsing errors
+#=========================
+# Use the following file as a template:
+# ========================
 
-# Required Inputs
-isPaired: true
-taxDatabase: path/to/ref
-pathToSingleData: path/to/data
-pathToPairedData: path/to/data
+# === General Inputs ===
 projectPrefix: myproject
-outDir: path/to/project/dir
+outDir: C:/Users/twuma/Downloads/
+pathToData: path/to/in/dir
+verbose: TRUE
+multithread: TRUE
+pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
+fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
-# Running fastq-dump
-runFastqDump: false
-pathToSampleIDs: path/to/SRR_Acc_List.txt
-
-# Trimming Primers (for bbduk.sh) - Optional
-trimPrimers: false
+# === Trimming Adapters (for bbduk.sh) ===
+# Trimmed sequences are written to pathToData parameter
 listOfAdapters: path/to/adapters.fa
 pathToRawFastq: path/to/raw_fastq/
-pathToNoPrimers: path/to/noprimer_seqs/
 
-# Running FASTQC
+# === Plot Quality ===
+aggregateQual: TRUE
+qualN: 5e+05
+
+# === Downloading sequence data ===
+pathToFastqDump: path/to/fastq-dump
+pathToSampleURLs: path/to/urls.txt
+
+# === Running FASTQC ===
 runFastqc: true
+pathToFastqc: path/to/fastqc
+installFastqc: FALSE
 pathToFastqcResults: path/to/fastqc_results
 fastqcThreads: 4
 fastqcExperimentDescription: "16S rRNA amplicon data"
 
-# Summary Documents (Do not include file extensions)
-finalSummaryTable: final_summary_table
+# === Create summary table that displays changes to total read counts ===
+finalSummaryTable: filt_summary_table.csv
 
-# plotQuality - Optional
-plotQuality: false
-qualityPlotPDF: quality_plots.pdf
-
-# qualityFiltering
-# Two values expected for paired-end data (i.e. [2.5, 2.5])
-filtMaxEE: 2.5
-filtTruncQ: 0
-filtTruncLen: 0
-filtTrimLeft: 0
-filtTrimRight: 0
-filtMultiThread: 0 
-filtVerbose: true
-filtMatchIDs: false
-filtMinLen: 50
-
-# Dereplication
-derepVerbose: true
+# === Dereplicate reads to keep only unique sequences ===
 derepN: 1e+06
 
-# Learning Errors
-errN: 1e+08 
-errMultithread: 4
-learnErrorsPlotPDF: "learn_errors_plot.pdf"
+# === Detect and learn error patterns in sequences ===
+errN: 1e+08
+errMultithread: false
+saveErrorsPlot: false
 
-# Denoising
+# === Denoise data ===
 dadaBandSize: 16
-dadaOmegaA: 1e-40 
+dadaOmegaA: 1e-40
 
-# Chimera Detection
-createChimeraDetectionTable: true
+# === Find chimeric sequences ===
+createChimeraDetectionTable: false
 chimeraDetectionMinSampleFraction: 0.9
 chimeraDetectionIgnoreNegatives: 1
 chimeraDetectionMinFoldParentOverabundance: 1.5
 chimeraDetectionParentAbundance: 2
 chimeraDetectionAllowOneOff: false
 chimeraDetectionMaxShift: 16
-chimeraDetectionMultiThread: false
-chimeraDetectionVerbose: false
 
-# Merge Paired-end Reads
+# === Filtering (Single-end data example)
+filtMaxEE: 2.5
+filtTruncQ: 0
+filtTruncLen: 0
+filtTrimLeft: 0
+filtTrimRight: 0
+filtMatchIDs: false
+filtMinLen: 50
+
+# === Filtering (Paired-end data example)
+# filtMaxEE: [2.5, 2.5]
+# filtTruncQ: [0, 0]
+# filtTruncLen: [0, 0]
+# filtTrimLeft: [0, 0]
+# filtTrimRight: [0, 0]
+# filtMatchIDs: false
+# filtMinLen: [50, 50]
+
+# === Merge Paired-end Reads ===
 mergePairs: false
 mergePairsTrimOverhang: true
 mergePairsMinOverlap: 12
 mergePairsMaxMismatch: 0
 mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
-mergePairsVerbose: false
 
-# Assign Taxonomy
+# === Assign Taxonomy ===
+taxDatabase: C:/Users/twuma/Downloads/silva_v138_lpsn_accession_matches_v1v4_primersearched_taxa.fa
 assignTaxMinBootstrap: 50
-assignTaxTryComplment: false
+assignTaxTryComplement: false
 assignTaxOutputBootstraps: false
 assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
-assignTaxMultiThread: false
-assignTaxVerbose: true
 
-# Merging
-mergeSamples: false
-finalMergedTable: final_merged_table.csv
+
+
+
+
+
+
+
+
+

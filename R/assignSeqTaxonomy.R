@@ -2,7 +2,7 @@
 #' Uses DADA2's assignTaxonomy function to assign taxa to ASV sequences. 
 #'
 #' @param seqtab Sequence frequency table
-#' @param object S4 object of type fastq2otu (i.e. fastq2out_paired, fastq2out_single)
+#' @param object S4 object of type fastq2otu (i.e. fastPaired, fastSingle)
 #' @return OTU table
 #' @export 
 assignSeqTaxonomy <- function(seqtab, object) {
