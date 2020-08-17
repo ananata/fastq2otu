@@ -14,6 +14,7 @@
 #' @keyword internal
 #' @export
 readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
+	
 	if (!file.exists(configFile)) {
 			stop(sprintf("%s could not be found, please enter a valid path", configFile))
 	}
@@ -22,7 +23,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	# Create new fastq2otu class object based on sequencing method
 	if ((type == "assignTax" | "assignTax" %in% type) & isPaired) {
 		if (length(type) == 1) {
-			temp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
+			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
 					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
 					minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50), 
 					tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
@@ -32,7 +33,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
 		} 
 		else if ('auto' %in% type & length(type) == 2) {
-			temp <- setFastAssignTaxa(inDir = options$pathToData,
+			mytemp <- setFastAssignTaxa(inDir = options$pathToData,
 						outDir = options$outDir, 
 						mergeSeqs = ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE), 
 						trimOverhang = ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE),
@@ -68,7 +69,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	}
 	else if ((type == "filter" | "filter" %in% type) & isPaired) {
 		if (length(type) == 1) {
-			temp <- setFastFilter(inDir = options$pathToData,
+			mytemp <- setFastFilter(inDir = options$pathToData,
 					outDir = options$outDir,
 					filtVerbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
@@ -83,7 +84,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
 		}
 		else if ("auto" %in% type & length(type) == 2) {
-			temp <- setFastFilter(
+			mytemp <- setFastFilter(
 						allowOneOff = ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
 						dadaBandSize = ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16), 
 						dadaOmegaA = ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40), 
@@ -123,7 +124,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	}
 	else if (type == "auto" & isPaired) {
 		# fastPaired object is created
-		temp <- setFastPaired(inDir = options$pathToData,
+		mytemp <- setFastPaired(inDir = options$pathToData,
 							outDir = options$outDir, 
 							mergeSeqs = ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE), 
 							trimOverhang = ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE),
@@ -149,7 +150,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 							maxShift = ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
 	}
 	else if (type == "auto" & !isPaired) {
-		temp <- setFastSingle(inDir = options$pathToData,
+		mytemp <- setFastSingle(inDir = options$pathToData,
 							outDir = options$outDir, 
 							verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 							prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
@@ -170,7 +171,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	}
 	else if ((type == "assignTax" | "assignTax" %in% type) & !isPaired) {
 		if (length(type) == 1) {
-			temp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
+			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
 						prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
 						minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
 						tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
@@ -180,7 +181,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 						multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
 		}
 		else if ("auto" %in% type & length(type) == 2) {
-			temp <- setFastSingle(inDir = options$pathToData,
+			mytemp <- setFastSingle(inDir = options$pathToData,
 								outDir = options$outDir, 
 								verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 								prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
@@ -213,7 +214,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	}
 	else if ((type == "filter" | "filter" %in% type) & !isPaired) {
 		if (length(type) == 1) {
-			temp <- setFastFilter(inDir = options$pathToData,
+			mytemp <- setFastFilter(inDir = options$pathToData,
 								outDir = options$outDir, 
 								filtVerbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 								prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
@@ -228,7 +229,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 								multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
 		}		
 		else if ("auto" %in% type & length(type) == 2) {
-			temp <- setFastSingle(inDir = options$pathToData,
+			mytemp <- setFastSingle(inDir = options$pathToData,
 								outDir = options$outDir, 
 								verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 								prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
@@ -260,7 +261,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 		}	
 	}
 	else if (type == "report") {
-		temp <- setFastReport(inDir = options$pathToData,
+		mytemp <- setFastReport(inDir = options$pathToData,
 							outDir = options$outDir, 
 							fastqcPath = options$pathToFastqc, 
 							installFastqc = ifelse(!is.null(options$installFastqc), options$installFastqc, FALSE),
@@ -268,19 +269,19 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 							description = ifelse(!is.null(options$fastqcExperimentDescription), options$fastqcExperimentDescription, "My Project"))
 	}
 	else if (type == "seqdump") {
-		temp <- setFastSeqDump(sampleURLs = options$pathToSampleURLs, 
+		mytemp <- setFastSeqDump(sampleURLs = options$pathToSampleURLs, 
 							outDir = options$outDir, 
 							sampleList = options$pathToSampleIDs, 
 							fastqDumpPath = options$pathToFastqDump)
 	
 	}
 	else if (type == "primertrim") {
-		temp <- setFastPrimerTrim(inDir = options$pathToRawFastq,
+		mytemp <- setFastPrimerTrim(inDir = options$pathToRawFastq,
 							outDir = options$pathToNoPrimers,  
 							adapterList = options$listOfAdapters)
 	}
 	else if (type == "qualityplot") {
-		temp <- setfastPlotQuality(aggregate = ifelse(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
+		mytemp <- setfastPlotQuality(aggregate = ifelse(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
 							N = ifelse(!is.null(options$qualN), options$qualN, 5e+05))
 	}
 	else { 
@@ -288,5 +289,5 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	}
 	
 	# Return object
-	return(temp)
+	return(mytemp)
 }

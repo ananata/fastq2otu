@@ -156,13 +156,13 @@ runPipeline <- function(configFile, isPaired = FALSE, plotQuality = TRUE, mergeS
 		print("Done!")
 }
 
-single_analysis(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.gz)?$") {
+single_analysis <- function(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.gz)?$") {
 	# Sort path to extract all .fastq files (external variables can be accessed)
 	Fs <- sort(list.files(fp, pattern = pattern, full.names = TRUE))
 
 	# Filter and Trim (generates "filtered_objects.RData" file)
 	message("==== Filtering and Trimming Amplicon Sequences ====")
-	filtFs <- filtTrim(Fs, object) TODO: Allow object to be passed to filtTrim function 
+	filtFs <- filtTrim(Fs, object) #TODO: Allow object to be passed to filtTrim function 
 
 	# Create object - simplifies debugging process
 	object <- readConfig(file, isPaired = FALSE, type = c('auto', 'filter'))
@@ -189,7 +189,7 @@ single_analysis(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.gz)?$") {
 	
 	# Track changes
 	getSeqN <- function(x) sum(getUniques(x))
-	if (nzchar(system.file(package = "HTSeqGenie")) {
+	if (nzchar(system.file(package = "HTSeqGenie"))) {
 		read.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
 		read.out <- lapply(filtFs, HTSeqGenie::getNumberOfReadsInFASTQFile)
 		track <- cbind(sample.names, read.in, read.out, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
@@ -209,7 +209,7 @@ single_analysis(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.gz)?$") {
 	return(dadaFs)
 }
 
-paired_analysis(fp, sample.names, object) {
+paired_analysis <- function(fp, sample.names, object) {
 	# Sort path to extract all .fastq files (allows .fastq, .fq or .fastq.gz file extensions)
 	Fs <- sort(list.files(fp, pattern = "*_1.fastq(.gz)?$", full.names = TRUE))
 	Rs <- sort(list.files(fp, pattern = "*_2.fastq(.gz)?$", full.names = TRUE))
@@ -272,7 +272,7 @@ paired_analysis(fp, sample.names, object) {
 	reverse.dada <- sapply(dadaRs, getSeqN)
 	merged <- sapply(merged_amplicons, getSeqN)
 
-	if (nzchar(system.file(package = "HTSeqGenie")) {
+	if (nzchar(system.file(package = "HTSeqGenie"))) {
 		forward.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
 		forward.out <- lapply(filt.forward, HTSeqGenie::getNumberOfReadsInFASTQFile)
 		reverse.in <- lapply(Rs, HTSeqGenie::getNumberOfReadsInFASTQFile)

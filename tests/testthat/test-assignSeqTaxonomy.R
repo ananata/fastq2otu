@@ -6,29 +6,36 @@ library(dada2) # Install using BiocManager --- installed latticeExtra using devt
 
 context("Assigning Taxonomy")
 
+# Source files
 source("C:/Users/twuma/FettweisLab/fastq2otu/R/readConfig.R")
 source("C:/Users/twuma/FettweisLab/fastq2otu/R/assignSeqTaxonomy.R")
+source("C:/Users/twuma/FettweisLab/fastq2otu/R/setup.R")
 
-# Provide path to config file
+# Provide path to config file (update involved parameters in file)
 config <- "C:/Users/twuma/FettweisLab/fastq2otu/inst/example-config.yml"
 options <- yaml::yaml.load_file(config)
 
-# Update options to test
-options$taxDatabase <- "C:/Users/twuma/Downloads/silva_v138_lpsn_accession_matches_v1v4_primersearched_taxa.fa"
-options$outDir <- "C:/Users/twuma/Downloads/"
+
+setFastAssignTaxa()
 
 # Custruct sequence table (uses DADA2's built in dataset)
 derep1 <- derepFastq(system.file("extdata", "sam1F.fastq.gz", package="dada2"))
 derep2 <- derepFastq(system.file("extdata", "sam2F.fastq.gz", package="dada2"))
+
 dada1 <- dada(derep1, tperr1)
 dada2 <- dada(derep2, tperr1)
-seqtab <- dada2::makeSequenceTable(list(sample1=dada1, sample2=dada2))
+test.seqtab <- dada2::makeSequenceTable(list(sample1=dada1, sample2=dada2))
 
 
 # Perform Tests
-test_that("Assign taxonomy using custom database", {
+test_that("Create fastAssignTaxa object using config file", {
   object <- readConfig(config, type = "assignTax")
-  
-  otutab <- assignSeqTaxonomy(seqtab, object)
   expect_true(!is.null(object))
 })
+
+test_that("Assign taxonomy using custom database", {
+  otuTab <- assignSeqTaxonomy(seqtab = test.seqtab, object = readConfig(config, type = "assignTax"))
+  expect_true(length(colnames(otuTab) == length(options$assignTaxLevels)))
+})
+
+

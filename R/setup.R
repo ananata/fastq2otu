@@ -170,8 +170,13 @@ check_seq_dump <- function(object) {
 check_assign_tax <- function(object) {
 	errors <- c()
 	if (!file.exists(object@taxDatabase)) {
-		msg <- paste("Provided input: ", object@taxDatabase, " is invalid and does not exist", sep = "")
-		errors <- c(errors, msg)
+		if (is.na(object@taxDatabase) | object@taxDatabase == "NA_character_" | length(object@taxDatabase) == 0 ) {
+			msg <- ("No path to reference database provided.")
+			errors <- c(errors, msg)
+		} else {
+			msg <- paste("Path to database: ", object@taxDatabase, " is invalid and does not exist", sep = "")
+			errors <- c(errors, msg)
+		}
 	}
 	if (length(errors) == 0) TRUE else errors
 }
@@ -349,7 +354,7 @@ setClass("fastFilter",
 #' @export
 setClass("fastAssignTaxa", 
 			slots = c(
-				# === Set parameters for taxonomic assignement ==="
+				# === Set parameters for taxonomic assignment ==="
 				taxDatabase = "character",
 				assignTaxMinBootstrap = "numeric",
 				assignTaxTryComplement = "logical",
@@ -358,6 +363,7 @@ setClass("fastAssignTaxa",
 				assignTaxMultiThread = "logical",
 				assignTaxVerbose = "logical"),
 			prototype = list(
+				taxDatabase = "NA_character_",
 				assignTaxMinBootstrap = 50,
 				assignTaxTryComplement = FALSE,
 				assignTaxOutputBootstraps = FALSE,
@@ -746,9 +752,8 @@ setFastAssignTaxa <- function(refDatabase, prefix = "myproject",
 					) {
 					
 			temp <- methods::new("fastAssignTaxa", 
-				projectPrefix = prefix, 
-								
 				taxDatabase = refDatabase,
+				projectPrefix = prefix, 
 				assignTaxMinBootstrap = minBootstrap,
 				assignTaxTryComplement = tryComplement,
 				assignTaxOutputBootstraps = showBootstraps,

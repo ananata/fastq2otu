@@ -4,12 +4,12 @@
 
 # === General Inputs ===
 projectPrefix: myproject
-outDir: path/to/out/dir
+outDir: C:/Users/twuma/Downloads/
 pathToData: path/to/in/dir
 verbose: TRUE
 multithread: TRUE
 pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
-fastaPattern: *_1.fastq(.gz)?$
+fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
 # === Trimming Adapters (for bbduk.sh) ===
 # Trimmed sequences are written to pathToData parameter
@@ -45,7 +45,7 @@ saveErrorsPlot: false
 
 # === Denoise data ===
 dadaBandSize: 16
-dadaOmegaA: [1e-40, 1e-40]
+dadaOmegaA: 1e-40
 
 # === Find chimeric sequences ===
 createChimeraDetectionTable: false
@@ -83,7 +83,7 @@ mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
 
 # === Assign Taxonomy ===
-taxDatabase: path/to/ref
+taxDatabase: C:/Users/twuma/Downloads/silva_v138_lpsn_accession_matches_v1v4_primersearched_taxa.fa
 assignTaxMinBootstrap: 50
 assignTaxTryComplement: false
 assignTaxOutputBootstraps: false
