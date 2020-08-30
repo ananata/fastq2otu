@@ -6,7 +6,7 @@ library(dada2) # Install using BiocManager --- installed latticeExtra to v3.5.3 
 
 context("Assigning Taxonomy")
 
-root <- "C:/Users/twuma/OneDrive/Desktop/fastq2otu/"
+root <- #TODO 
 setwd(root)
 
 # Source files

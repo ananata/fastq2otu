@@ -3,37 +3,35 @@
 # ========================
 
 # === General Inputs ===
-projectPrefix: myproject
-outDir: C:/Users/twuma/Downloads/
-pathToData: path/to/in/dir
+projectPrefix: #TODO
+outDir: #TODO
+pathToData: #TODO
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
+pathToSampleIDs: #TODO # Optional: Provide when using bbduk.sh or fastq-dump
 fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
 # === Trimming Adapters (for bbduk.sh) ===
 # Trimmed sequences are written to pathToData parameter
-listOfAdapters: path/to/adapters.fa
-pathToRawFastq: path/to/raw_fastq/
+#listOfAdapters: path/to/adapters.fa
+#pathToRawFastq: path/to/raw_fastq/
 
 # === Plot Quality ===
-aggregateQual: TRUE
+aggregateQual: true
 qualN: 5e+05
 
 # === Downloading sequence data ===
+useFastqDump: false
 pathToFastqDump: path/to/fastq-dump
 pathToSampleURLs: path/to/urls.txt
 
 # === Running FASTQC ===
 runFastqc: true
 pathToFastqc: path/to/fastqc
-installFastqc: FALSE
+installFastqc: false
 pathToFastqcResults: path/to/fastqc_results
 fastqcThreads: 4
 fastqcExperimentDescription: "16S rRNA amplicon data"
-
-# === Create summary table that displays changes to total read counts ===
-finalSummaryTable: filt_summary_table.csv
 
 # === Dereplicate reads to keep only unique sequences ===
 derepN: 1e+06
@@ -83,7 +81,7 @@ mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
 
 # === Assign Taxonomy ===
-taxDatabase: C:/Users/twuma/OneDrive/Documents/R/win-library/4.0/dada2/extdata/example_train_set.fa.gz
+taxDatabase: #TODO
 assignTaxMinBootstrap: 50
 assignTaxTryComplement: false
 assignTaxOutputBootstraps: false

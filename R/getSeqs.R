@@ -6,20 +6,44 @@
 #' @return path to directory
 #' @export
 getSeqs <- function(object) {
-  # Extract required inputs
-  fDumpScript <- system.file("exec", "fastq_dump", package = "fastq2otu")
+  # Get bash script
   retrieveSRAData <- system.file("exec", "retrieve_sra_sequences.sh", package = "fastq2otu")
-  sraList <- object@pathToSampleIDs
-  output <- object@pathToData # Writes to input directory
-
-  # Check to see if path exists
-  if (!dir.exists(output)) {
-    dir.create(output)
+  
+  if (object@useDump) {
+    # Extract required inputs
+    # Get path to fastq-dump executable script
+    if (!is.null(object@pathToFastqDump) & file.exists(object@pathToFastqDump)) {
+      fDumpScript <- object@pathToFastqDump
+    } else {
+      stop(paste0("Invalid input for pathToFastqDump.", object@pathToFastqDump, " could not be found."))
+    }
+    
+    # Get path to sample IDs
+    if (!is.null(object@pathToSampleIDs) & !file.exists(object@pathToSampleIDs)) {
+      sraList <- object@pathToSampleIDs
+      output <- object@pathToData # Writes to input directory (validated when object was created)
+    }
+    
+    # Set system command
+    command <- paste(retrieveSRAData, fDumpScript, sraList, output, sep = " ")
+  } else {
+    # Extract required inputs
+    # Get path to sample URLs -- obtained from SRA Explorer site
+    if (file.exists(object@pathToSampleURLs)) {
+      sample.urls <- object@pathToSampleURLs
+    } else {
+      stop(paste0("Invalid input for pathToSampleURLs", object@pathToSampleURLs, " could not be found."))
+    }
+    
+    # Set system command
+    if(.Platform$OS.type == "unix") {
+      command <- paste0("wget -i ", sample.urls, " -P ", object@pathToData) 
+    } else {
+      command <- paste0("xargs -n 1 curl -O < ", sample.urls)
+      output <- object@pathToData # Writes to input directory
+    }
   }
-
-  # Set system command
-  command <- paste(retrieveSRAData, fDumpScript, sraList, output, sep = " ")
-
+  
   # Execute command
   system(command)
 

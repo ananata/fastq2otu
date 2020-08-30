@@ -1,11 +1,11 @@
 library(testthat)
 context("Parse Config File")
 
-source("C:/Users/twuma/FettweisLab/fastq2otu/R/readConfig.R")
-source("C:/Users/twuma/FettweisLab/fastq2otu/R/setup.R")
+source("readConfig.R")
+source("setup.R")
 
 
-config <- "C:/Users/twuma/FettweisLab/fastq2otu/inst/example-config.yml"
+config <- #TODO
 options <- yaml::yaml.load_file(config)
 
 test_that("Create fastSingle object", {
@@ -45,6 +45,27 @@ test_that("Create fastPrimerTrim object", {
 
 test_that("Create fastPlotQuality object", {
   object <- readConfig(config, type = "qualityplot")
+  expect_true(!is.null(object))
+})
+
+test_that("Create fastSingle object with Filtering parameters", {
+  object <- readConfig(config, type = c('auto', 'filter'))
+  expect_true(!is.null(object))
+})
+
+test_that("Create fastSingle object with Assign Taxonomy parameters", {
+  object <- readConfig(config, type = c('auto', 'assignTax'))
+  expect_true(!is.null(object))
+})
+
+# Flipping order of list
+test_that("Create fastSingle object with Filtering parameters", {
+  object <- readConfig(config, type = c('filter', 'auto'))
+  expect_true(!is.null(object))
+})
+
+test_that("Create fastSingle object with Assign Taxonomy parameters", {
+  object <- readConfig(config, type = c('assignTax', 'auto'))
   expect_true(!is.null(object))
 })
 

@@ -13,7 +13,7 @@
 #' @return An S4 object
 #' @keyword internal
 #' @export
-readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
+readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 	
 	if (!file.exists(configFile)) {
 			stop(sprintf("%s could not be found, please enter a valid path", configFile))
@@ -21,7 +21,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 	options <- yaml::yaml.load_file(configFile)
 
 	# Create new fastq2otu class object based on sequencing method
-	if ((type == "assignTax" | "assignTax" %in% type) & isPaired) {
+	if ("assignTax" %in% type & isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
 					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
@@ -64,21 +64,21 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 						taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")))
 		}
 		else {
-			stop("Invalid input provided for type parameter")
+			stop("Invalid type input(s) provided")
 		}
 	}
-	else if ((type == "filter" | "filter" %in% type) & isPaired) {
+	else if ("filter" %in% type & isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastFilter(inDir = options$pathToData,
 					outDir = options$outDir,
-					filtVerbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
+					verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
 					maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)), 
 					truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)), 
 					truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)), 
 					trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
 					trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)), 
-					matchIDs = ifelse(!is.null(options$filtMatchIDs), as.numeric(as.character(options$filtMatchIDs)), FALSE), 
+					matchIDs = ifelse(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE), 
 					minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
 					isPaired = TRUE, 
 					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
@@ -115,14 +115,14 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 						truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)), 
 						trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
 						trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)), 
-						matchIDs = ifelse(!is.null(options$filtMatchIDs), as.numeric(as.character(options$filtMatchIDs)), FALSE), 
+						matchIDs = ifelse(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE), 
 						minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)))
 		}
 		else {
-			stop("Invalid input provided for type parameter")
+			stop("Invalid type input(s) provided")
 		}
 	}
-	else if (type == "auto" & isPaired) {
+	else if ("auto" %in% type & isPaired) {
 		# fastPaired object is created
 		mytemp <- setFastPaired(inDir = options$pathToData,
 							outDir = options$outDir, 
@@ -149,7 +149,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 							allowOneOff = ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
 							maxShift = ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
 	}
-	else if (type == "auto" & !isPaired) {
+	else if ("auto" %in% type & !isPaired) {
 		mytemp <- setFastSingle(inDir = options$pathToData,
 							outDir = options$outDir, 
 							verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
@@ -169,7 +169,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 							allowOneOff = ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
 							maxShift = ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
 	}
-	else if ((type == "assignTax" | "assignTax" %in% type) & !isPaired) {
+	else if ("assignTax" %in% type & !isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
 						prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
@@ -212,20 +212,19 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 			stop("Invalid input provided for type parameter")
 		}				
 	}
-	else if ((type == "filter" | "filter" %in% type) & !isPaired) {
+	else if ("filter" %in% type & !isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastFilter(inDir = options$pathToData,
 								outDir = options$outDir, 
-								filtVerbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
+								verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
 								prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
 								maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)), 
 								truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)), 
 								truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)), 
 								trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
 								trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)), 
-								matchIDs = ifelse(!is.null(options$filtMatchIDs), as.numeric(as.character(options$filtMatchIDs)), FALSE), 
 								minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
-								isPaired = TRUE, 
+								isPaired = FALSE, 
 								multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
 		}		
 		else if ("auto" %in% type & length(type) == 2) {
@@ -260,7 +259,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 			stop("Invalid input provided for type parameter")
 		}	
 	}
-	else if (type == "report") {
+	else if ("report" %in% type) {
 		mytemp <- setFastReport(inDir = options$pathToData,
 							outDir = options$outDir, 
 							fastqcPath = options$pathToFastqc, 
@@ -268,21 +267,22 @@ readConfig <- function(configFile, isPaired = FALSE, type = 'auto') {
 							numThreads = ifelse(!is.null(options$fastqcThreads), as.numeric(as.character(options$fastqcThreads)), 4), 
 							description = ifelse(!is.null(options$fastqcExperimentDescription), options$fastqcExperimentDescription, "My Project"))
 	}
-	else if (type == "seqdump") {
+	else if ("seqdump" %in% type) {
 		mytemp <- setFastSeqDump(sampleURLs = options$pathToSampleURLs, 
 							outDir = options$outDir, 
-							sampleList = options$pathToSampleIDs, 
+							sampleList = options$pathToSampleIDs,
+							useFastqDump = options$useFastqDump,
 							fastqDumpPath = options$pathToFastqDump)
 	
 	}
-	else if (type == "primertrim") {
+	else if ("primertrim" %in% type) {
 		mytemp <- setFastPrimerTrim(inDir = options$pathToRawFastq,
-							outDir = options$pathToNoPrimers,  
+							outDir = options$pathToData,  
 							adapterList = options$listOfAdapters)
 	}
-	else if (type == "qualityplot") {
+	else if ("qualityplot" %in% type) {
 		mytemp <- setfastPlotQuality(aggregate = ifelse(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
-							N = ifelse(!is.null(options$qualN), options$qualN, 5e+05))
+							N = ifelse(!is.null(options$qualN), as.numeric(as.character(options$qualN)), 5e+05))
 	}
 	else { 
 		stop("Error reading config file. Invalid inputs supplied")

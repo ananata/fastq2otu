@@ -1,0 +1,88 @@
+#=========================
+# Use the following file as a template:
+# ========================
+
+# === General Inputs ===
+projectPrefix: #TODO
+outDir: #TODO
+pathToData: path/to/in/dir
+verbose: TRUE
+multithread: TRUE
+pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
+fastaPattern: ^.*[1,2]?.fastq(.gz)?$
+
+# === Trimming Adapters (for bbduk.sh) ===
+# Trimmed sequences are written to pathToData parameter
+listOfAdapters: path/to/adapters.fa
+pathToRawFastq: path/to/raw_fastq/
+
+# === Plot Quality ===
+aggregateQual: true
+qualN: 5e+05
+
+# === Downloading sequence data ===
+useFastqDump: false
+pathToFastqDump: path/to/fastq-dump
+pathToSampleURLs: path/to/urls.txt
+
+# === Running FASTQC ===
+runFastqc: true
+pathToFastqc: path/to/fastqc
+installFastqc: false
+pathToFastqcResults: path/to/fastqc_results
+fastqcThreads: 4
+fastqcExperimentDescription: "16S rRNA amplicon data"
+
+# === Dereplicate reads to keep only unique sequences ===
+derepN: 1e+06
+
+# === Detect and learn error patterns in sequences ===
+errN: 1e+08
+errMultithread: false
+saveErrorsPlot: false
+
+# === Denoise data ===
+dadaBandSize: 16
+dadaOmegaA: 1e-40
+
+# === Find chimeric sequences ===
+createChimeraDetectionTable: false
+chimeraDetectionMinSampleFraction: 0.9
+chimeraDetectionIgnoreNegatives: 1
+chimeraDetectionMinFoldParentOverabundance: 1.5
+chimeraDetectionParentAbundance: 2
+chimeraDetectionAllowOneOff: false
+chimeraDetectionMaxShift: 16
+
+# === Filtering (Single-end data example)
+filtMaxEE: 2.5
+filtTruncQ: 0
+filtTruncLen: 0
+filtTrimLeft: 0
+filtTrimRight: 0
+filtMatchIDs: false
+filtMinLen: 50
+
+# === Filtering (Paired-end data example)
+# filtMaxEE: [2.5, 2.5]
+# filtTruncQ: [0, 0]
+# filtTruncLen: [0, 0]
+# filtTrimLeft: [0, 0]
+# filtTrimRight: [0, 0]
+# filtMatchIDs: false
+# filtMinLen: [50, 50]
+
+# === Merge Paired-end Reads ===
+mergePairs: false
+mergePairsTrimOverhang: true
+mergePairsMinOverlap: 12
+mergePairsMaxMismatch: 0
+mergePairsReturnRejects: false
+mergePairsJustConcatenate: false
+
+# === Assign Taxonomy ===
+taxDatabase: #TODO
+assignTaxMinBootstrap: 50
+assignTaxTryComplement: false
+assignTaxOutputBootstraps: false
+assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
