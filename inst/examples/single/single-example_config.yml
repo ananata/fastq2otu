@@ -3,9 +3,9 @@
 # ========================
 
 # === General Inputs ===
-projectPrefix: #TODO
-outDir: #TODO
-pathToData: path/to/in/dir
+projectPrefix: single_vaginal_set
+outDir: fastq2otu/inst/examples/single/output
+pathToData: fastq2out/inst/examples/single/output/seq_files
 verbose: TRUE
 multithread: TRUE
 pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
@@ -81,7 +81,7 @@ mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
 
 # === Assign Taxonomy ===
-taxDatabase: #TODO
+taxDatabase: ~/lineages/stirrups_ref_library_10_25_17.fa.gz
 assignTaxMinBootstrap: 50
 assignTaxTryComplement: false
 assignTaxOutputBootstraps: false

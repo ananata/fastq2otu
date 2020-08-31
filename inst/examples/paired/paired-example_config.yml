@@ -3,12 +3,12 @@
 # ========================
 
 # === General Inputs ===
-projectPrefix: #TODO
-outDir: #TODO
-pathToData: #TODO
+projectPrefix: paired_vaginal_set
+outDir: fastq2otu/inst/examples/paired/output
+pathToData: fastq2otu/inst/examples/paired/output/seq_files
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: #TODO # Optional: Provide when using bbduk.sh or fastq-dump
+pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Optional: Provide when using fastq-dump
 fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
 # === Trimming Adapters (for bbduk.sh) ===
@@ -22,7 +22,7 @@ qualN: 5e+05
 
 # === Downloading sequence data ===
 useFastqDump: false
-pathToFastqDump: path/to/fastq-dump
+pathToFastqDump: ~/.sra-toolkit/bin/fastq-dump
 pathToSampleURLs: path/to/urls.txt
 
 # === Running FASTQC ===
@@ -81,7 +81,7 @@ mergePairsReturnRejects: false
 mergePairsJustConcatenate: false
 
 # === Assign Taxonomy ===
-taxDatabase: #TODO
+taxDatabase: ~/lineages/stirrups_ref_library_10_25_17.fa.gz # TODO: Update path
 assignTaxMinBootstrap: 50
 assignTaxTryComplement: false
 assignTaxOutputBootstraps: false
