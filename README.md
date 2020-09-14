@@ -46,7 +46,6 @@ fastq2otu:.
         removeChimeras.R
         removePrimers.R
         runFastqc.R
-        run_fastq2otu.R
         saveSeqs.R
         saveTaxonomyTables.R
         setup.R
@@ -92,24 +91,21 @@ library("ananata/fastq2otu")
 ```
 ## Running FASTQ2OTU
 
-#### Using a config file
+### Using a config file
 
 | Variable        | Type           | Default  | Description |
-<<<<<<< HEAD
-| --------------- |:--------------:|:--------:|-------------|
+| --------------- |--------------|--------|-------------|
 |taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
 |isPaired|Logical| FALSE | Required. Determine whether input sequences are single (FALSE) or paired-end (TRUE) |
 |pathToData|Character| N/A | Required. Path to directory containing input FASTQ files. For paired-end data, files containing forward or reverse reads must be in the same directory path. | 
-|projectPrefix|Character|myproject| Unique identifier to label output files generated from workflow.
+|projectPrefix|Character|myproject| Unique identifier to label output files generated from workflow.|
 |outDir|Character|Current working directory|Path to output directory that the contain all output files and documents. |
 |runFastqDump|Logical|FALSE|Determines whether fastq-dump should be executed. |
 |pathToSampleIDs|Character|N/A|Required if runFastqDump is TRUE. Path to a list of SRA Accession ids to be downloaded using [fastq-dump](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=fastq-dump).|
 |trimPrimers|Logical|FALSE|Determines whether bbduk.sh should be executed to trim all adapters present on input FASTQ files |
 |listOfAdapters|Character|N/A|Required if trimPrimers is TRUE. Path to a list of adapter sequence to be removed using [bbduk.sh](https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/)|
+|pathToBBDuk|Character|N/A|Path to bbduk.sh script (should be kept in BBTools root directory. Refer to BBTools [0documentation] (https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/) for more information.)|
 |pathToRawFastq|Character|N/A|Required if trimPrimers is TRUE. Path to directory containing untrimmed sequences. |
-|// TODO...||
-=======
-| --------------- |--------------:|:--------:|-------------|
 | projectPrefix ||||
 | outDir ||||
 | pathToData ||||
@@ -119,82 +115,14 @@ library("ananata/fastq2otu")
 | pathToNoPrimers ||||
 | aggregateQual ||||
 | qualN||||
-|runFastqDump: false
-pathToSampleIDs: path/to/SRR_Acc_List.txt
-runFastqc: true
-pathToFastqcResults: path/to/fastqc_results
-fastqcThreads: 4
-fastqcExperimentDescription: "16S rRNA amplicon data"
+|runFastqDump||||
+|pathToSampleIDs||||
+|runFastqc||||
+|pathToFastqcResults||||
+|fastqcThreads||||
+|fastqcExperimentDescription||||
 
-# === Create summary table that displays changes to total read counts ===
-finalSummaryTable: filt_summary_table.csv
-
-# === Dereplicate reads to keep only unique sequences ===
-derepVerbose: false
-derepN: 1e+06
-
-# === Detect and learn error patterns in sequences ===
-errN: 1e+08
-errMultithread: false
-saveErrorsPlot: false
-
-# === Denoise data ===
-dadaBandSize: 16
-dadaOmegaA: 1e-40
-
-# === Find chimeric sequences ===
-createChimeraDetectionTable: false
-chimeraDetectionMinSampleFraction: 0.9
-chimeraDetectionIgnoreNegatives: 1
-chimeraDetectionMinFoldParentOverabundance: 1.5
-chimeraDetectionParentAbundance: 2
-chimeraDetectionAllowOneOff: false
-chimeraDetectionMaxShift: 16
-chimeraDetectionMultiThread: false
-chimeraDetectionVerbose: false
-
-# === Filtering (Single-end data example)
-filtMaxEE: 2.5
-filtTruncQ: 0
-filtTruncLen: 0
-filtTrimLeft: 0
-filtTrimRight: 0
-filtMultiThread: true
-filtVerbose: true
-filtMatchIDs: false
-filtMinLen: 50
-
-# === Filtering (Paired-end data example)
-filtMaxEE: [2.5, 2.5]
-filtTruncQ: [0, 0]
-filtTruncLen: [0, 0]
-filtTrimLeft: [0, 0]
-filtTrimRight: [0, 0]
-filtMultiThread: true
-filtVerbose: true
-filtMatchIDs: false
-filtMinLen: [50, 50]
-
-# === Merge Paired-end Reads ===
-mergePairs: false
-mergePairsTrimOverhang: true
-mergePairsMinOverlap: 12
-mergePairsMaxMismatch: 0
-mergePairsReturnRejects: false
-mergePairsJustConcatenate: false
-mergePairsVerbose: false
-
-# === Assign Taxonomy ===
-taxDatabase: path/to/ref
-assignTaxMinBootstrap: 50
-assignTaxTryComplement: false
-assignTaxOutputBootstraps: false
-assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
-assignTaxMultiThread: true
-assignTaxVerbose: true
->>>>>>> f572ce62e52d4a3229fe889ab8a97153f556354e
-
-#### Package Walkthrough
+### Package Walkthrough
 
 
 
@@ -221,6 +149,8 @@ This license restricts the usage of this application for non-open sourced system
 
 We would like to thank the following, without whom this would not have happened:
 * Virginia Commonwealth University
+* University of Texas - Austin
+* TODO: Add all acknowledgements
 
 
 
