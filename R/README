@@ -1,0 +1,15 @@
+1. getSeqs.R 
+	- Function: Download fastq files from NCBI's SRA database using SRA-Toolkit's fastq-dump / fasterq-dump software OR via FTP link(s). 
+	- Tricky Features: All files are written to path labeled as "pathToData" in the config file. This path is also stored as the "outDir" attribute of the fastSeqDump object created by the readConfigFile. 
+	- TODO: Test function in a windows environment to see if files are output to the correct directory (as specified in config file). 
+2. removePrimers.R
+	- Function: Remove adapter sequences from all fastq files
+	- Tricky Features: 
+		- (09/31/2020) Added new attribute to fastPrimerTrim object called "pathToBBDuk". Enforces the rule that users must have the entire bbtools suite downloaded before attempting to the execute the function.
+		- When the "pathToNoPrimers" option is provided in the config file, the "pathToData" parameter does not have to be provided. Once pathToNoPrimers is returned from removePrimers.R, it is used in place of pathToData.  
+	- TODO: Run function in a windows environment (haven't tried bbduk.sh on Windows yet).
+3. plotQuality.R
+	- Function: Generate a quality distribution plot of sequenced data. Plot can show aggregated or non-aggregated data. 
+	- Tricky Features: None
+	- TODO: Allow automized generation of Nana's custom quality profile.
+4. 

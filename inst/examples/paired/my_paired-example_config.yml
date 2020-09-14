@@ -1,35 +1,29 @@
 #=========================
-# Use the following file as a template:
+# Uses the following file to test getSeqs
 # ========================
 
 # === General Inputs ===
 projectPrefix: paired_vaginal_set
-outDir: fastq2otu/inst/examples/paired/output
-pathToData: fastq2otu/inst/examples/paired/output/seq_files
+outDir: /gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/inst/examples/paired/output
+pathToData: /gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/inst/examples/paired/output/seq_files
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Optional: Provide when using fastq-dump
+pathToSampleIDs: /gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Optional: Provide when using fastq-dump
 fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
-# === Trimming Adapters ===
+# === Trimming Adapters (for bbduk.sh) ===
 # Trimmed sequences are written to pathToData parameter
-listOfAdapters: path/to/adapters.fa
-pathToRawFastq: path/to/raw_fastq/
-maxMismatch: 2
-allowIndels: false
-trimForwardReads: false
-trimReverseReads: false
-orientReads: false
-compressFiles: false
+#listOfAdapters: path/to/adapters.fa
+#pathToRawFastq: path/to/raw_fastq/
 
 # === Plot Quality ===
 aggregateQual: true
 qualN: 5e+05
 
 # === Downloading sequence data ===
-useFastqDump: false
-pathToFastqDump: ~/.sra-toolkit/bin/fastq-dump
-pathToSampleURLs: path/to/urls.txt
+useFastqDump: true # CHANGED to TRUE - or else wget will be used instead
+pathToFastqDump: ~/.sra-toolkit/bin/fasterq-dump
+pathToSampleURLs: /gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/inst/examples/paired/paired-example_SRR_Url_List.txt
 
 # === Running FASTQC ===
 runFastqc: true

@@ -35,12 +35,12 @@ if [ ! -d "$output" ]; then
 	fi
 fi
 
-# Navigate to output directory
-cd $output
-
-# Read list and install files
+# Read list and write files to output directory
 while IFS= read -r line
 do
-	$fastq --split-3 --gzip "$line"
+	$fastq --split-3 "$line" -O $output
 done < "$input"
+
+# Gzip all fastq-files in output directory
+gzip ${output}/*.fastq
 

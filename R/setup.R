@@ -98,6 +98,41 @@ check_fastPaired <- function(object) {
 }
 
 
+#' Check for valid inputs for fastPrimerTrim
+#'
+#' This function checks to see if "pathToBBduk", "listOfAdapters", "pathToRawFastq" and "pathToNoPrimers" parameters are present and valid. Missing or invalid inputs will cause an
+#' error message to be displayed.
+#'
+#' @param object fastPrimerTrim-type S4 object
+#' @return TRUE (boolean) or error message detailing source(s) of error.
+#' @keyword internal
+#' @export
+check_primer_trim <- function(object) {
+	errors <- character()
+	if (is.na(object@listOfAdapters) | object@listOfAdapters == "") {
+		msg <- "No valid input provided for listOfAdapters. Please update your config file and try again"
+		errors <- c(errors, msg)
+	} else if (!file.exists(object@listOfAdapters)) {
+		msg <- paste0("The path provided for listOfAdapters: ", object@listOfAdapters, " is invalid and does not exist")
+		errors <- c(errors, msg)
+	}
+	if (is.na(object@pathToRawFastq) | object@pathToRawFastq == "") {
+		msg <- "No valid input provided for pathToRawFastq. Please update your config file and try again. "
+		errors <- c(errors, msg)
+	} else if (!dir.exists(object@pathToRawFastq)) {
+		msg <- paste0("The path provided for pathToRawFastq: ", object@pathToRawFastq, " is invalid and does not exist")
+		errors <- c(errors, msg)
+	}
+	if (is.na(object@pathToNoPrimers) | object@pathToNoPrimers == "") {
+		msg <- "No valid input provided for pathToNoPrimers. Please update your config file and try again. "
+		errors <- c(errors, msg)
+	}
+	if (length(errors) == 0) TRUE else errors
+}
+
+
+
+
 #' Check for valid inputs for fastFilter
 #'
 #' This function checks to see if filtering parameters are present and valid. Missing or invalid inputs will cause an
@@ -344,8 +379,7 @@ setClass("fastPaired",
 			),
 			prototype = list(
 				pathToData = NA_character_,
-				filePattern = ".*_[1,2].fastq(.gz)?",
-											
+				filePattern = ".*_[1,2].fastq(.gz)?",											
 				doMergeSeqPairs = FALSE,
 				mergeSeqPairsTrimOverhang = FALSE,
 				mergeSeqPairsMinOverlap = 12,
@@ -484,13 +518,26 @@ setClass("fastPrimerTrim",
 				trimPrimers = "logical",
 				listOfAdapters = "character",
 				pathToRawFastq = "character",
-				pathToNoPrimers = "character"),
+				pathToNoPrimers = "character",
+				maxMismatch = "numeric", 
+				allowIndels = "logical",
+				trimForwardReads = "logical",
+				trimReverseReads = "logical",
+				orientReads = "logical",
+				compressFiles = "logical"),
 			prototype = list(
 				trimPrimers = FALSE,
 				listOfAdapters = NA_character_,
 				pathToRawFastq = NA_character_,
-				pathToNoPrimers = NA_character_),
-			contains = "fastq2otu"
+				pathToNoPrimers = NA_character_,
+				maxMismatch = 2,
+				allowIndels = FALSE,
+				trimForwardReads = FALSE,
+				trimReverseReads = FALSE,
+				orientReads = FALSE, 
+				compressFiles = FALSE),
+			contains = "fastq2otu",
+			validity = check_primer_trim
 		)
 
 # Can extend and create with new("fastReport", ...)
@@ -710,21 +757,37 @@ setFastReport <- function(inDir, outDir, validate = FALSE, fastqcPath = NA_chara
 #' @param outDir Required input. Path to write output files.
 #' @param adapterList Required input. List of adapter sequences to remove from files. 
 #' @param validate Default is FALSE. When TRUE, all validation method are executed.
+#' @param paired Default is FALSE. When TRUE, two adapter sequences will be expected in file listed in "listOfAdapters"
+#' @param maxMismatch Default is 2. Sets the number of bases to mismatch when aligning forward / reverse adapters to sequences.
+#' @param allowIndels Default is false. Allows gaps / insertions when aligning forward / reverse adapters to sequences. 
+#' @param trimF Default is FALSE. Trim forward reads.
+#' @param trimR Default is FALSE. Trim reverse reads.
+#' @param orient Default is FALSE. Orient forward and reverse reads into the same direction
+#' @param compress Default is FALSE. When TRUE, all output files are gzipped.
 #' TODO: Add Example 
 #' 
 #  @return S4 object of type fastPrimerTrim
 #' @export
-setFastPrimerTrim <- function(inDir, outDir, adapterList, validate = FALSE) {
+setFastPrimerTrim <- function(inDir, outDir, adapterList, paired = FALSE, validate = FALSE,
+			maxMismatch = 2, allowIndels = FALSE, trimF = FALSE, trimR = FALSE, 
+			orient = FALSE, compress = FALSE) {
 	temp <- new("fastPrimerTrim", 
 	      checkValidity = validate,
 				listOfAdapters = adapterList,
 				pathToRawFastq = inDir,
-				pathToNoPrimers = outDir)
+				pathToNoPrimers = outDir,
+				isPaired = paired, 
+				maxMismatch = maxMismatch,
+                                allowIndels = allowIndels,
+                                trimForwardReads = trimF,
+                                trimReverseReads = trimR,
+                                orientReads = orient,
+                                compressFiles = compress)
 	
 	return(temp)
 }
 
-#' Create a fastSeqDump object
+ #' Create a fastSeqDump object
 #' Users have the option of downloading SRA data using fastq-dump or FTP. 
 #' 
 #' @param sampleURLs OPTIONAL input. Path to text file containing FTP URLs generated from SRA Explorer. If this parameter is provided, then fastqDumpPath is ignored.

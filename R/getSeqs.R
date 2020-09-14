@@ -73,6 +73,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     # Set system command
     if(.Platform$OS.type == "unix") {
       command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
+      message("This is my output path: ", object@outDir)
       output <- object@outDir # Writes to input directory 
     } else {
 	# TODO: Test on windows machine
@@ -89,4 +90,15 @@ getSeqs <- function(object, useFastqDump = FALSE) {
   return(c(output, command))
 }
 
+root <- "/gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/"
 
+source(paste0(root, "R/readConfig.R"))
+source(paste0(root, "R/setup.R"))
+
+paired_config <- paste0(root, "inst/examples/paired/my_paired-example_config.yml")
+paired_options <- yaml::yaml.load_file(paired_config)
+
+object <- readConfig(paired_config, type = "seqdump")
+fp <- getSeqs(object, useFastqDump = FALSE)
+
+fp
