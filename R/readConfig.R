@@ -259,7 +259,7 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 			stop("Invalid input provided for type parameter")
 		}	
 	}
-	else if ("report" %in% type) {
+	else if ("report" == type) {
 		mytemp <- setFastReport(inDir = options$pathToData,
 							outDir = options$outDir, 
 							fastqcPath = options$pathToFastqc, 
@@ -267,25 +267,25 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 							numThreads = ifelse(!is.null(options$fastqcThreads), as.numeric(as.character(options$fastqcThreads)), 4), 
 							description = ifelse(!is.null(options$fastqcExperimentDescription), options$fastqcExperimentDescription, "My Project"))
 	}
-	else if ("seqdump" %in% type) {
+	else if ("seqdump" == type) {
 		mytemp <- setFastSeqDump(sampleURLs = options$pathToSampleURLs, 
-							outDir = options$outDir, 
+							outDir = options$pathToData, 
 							sampleList = options$pathToSampleIDs,
 							useFastqDump = options$useFastqDump,
 							fastqDumpPath = options$pathToFastqDump)
 	
 	}
-	else if ("primertrim" %in% type) {
+	else if ("primertrim" == type) {
 		mytemp <- setFastPrimerTrim(inDir = options$pathToRawFastq,
 							outDir = options$pathToData,  
 							adapterList = options$listOfAdapters)
 	}
-	else if ("qualityplot" %in% type) {
+	else if ("qualityplot" == type) {
 		mytemp <- setfastPlotQuality(aggregate = ifelse(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
 							N = ifelse(!is.null(options$qualN), as.numeric(as.character(options$qualN)), 5e+05))
 	}
 	else { 
-		stop("Error reading config file. Invalid inputs supplied")
+		stop("Error reading config file. Invalid type supplied")
 	}
 	
 	# Return object

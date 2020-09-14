@@ -465,7 +465,7 @@ setClass("fastSeqDump",
 				pathToFastqDump = NA_character_,
 				installFastqDump = FALSE,
 				useDump = FALSE),
-			contains = "fastq2otu",
+			contains = c("fastSingle", "fastPaired"),
 			validity = check_seq_dump
 		)
 
