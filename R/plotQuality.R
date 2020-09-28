@@ -1,17 +1,13 @@
 #" Generate Quality Distribution as Aggregrated Plot
 #' 
 #' @param fp Path to directory containing FASTQ files
-#' @param out Ouput directory
-#' @param label Unique file or project id used to generate file/plot title 
+#' @param label Unique file or project id used to generate file/plot title
+#' @param object fastPlotQuality object 
 #' @export
-plotQuality <- function(fp, out, label, object) {
+plotQuality <- function(fp, label, object) {
 	# Verify that inputs are valid
 	if (!dir.exists(fp) | length(list.files(path = fp, pattern = ".fastq")) == 0) {
 		stop(sprintf("'%s' does not exist or no FASTQ files could be detected in path", fp))
-	}
-
-	if (!dir.exists(out)) {
-		stop(sprintf("'%s' does not exist.", out))
 	}
 
 	# Extract all FASTQ files from path
@@ -21,19 +17,20 @@ plotQuality <- function(fp, out, label, object) {
 	currDate <- gsub("-", "", Sys.Date())
 
 	## Plot aggregate graph
-	if (object@aggregate) {
-	  plotAgg <- dada2::plotQualityProfile(Fs, n = object@qualN, aggregate = T)
+	if (object@aggregateQual) {
+	  plotAgg <- dada2::plotQualityProfile(Fs, n = object@qualN, aggregate = T) # Returns a single plot
 	} else {
 	  plotAgg <- lapply(Fs, plot_quality, n = object@qualN) # Returns a list of ggplots
 	}
-	if (!missing(label) & object@aggregate) {
+	if (!missing(label) & object@aggregateQual) {
 		## Change plot title
 		plotAgg <- plotAgg + ggplot2::ggtitle(paste0(label, " Aggregate Quality Plot"))
-	} else if (!missing(label) & !object@aggregate) {
-		plotAgg <- plotAgg + ggplot2::ggtitle(paste0(label, " Quality Plots")		
+	} else if (!missing(label) & !object@aggregateQual) {
+		plotAgg <- plotAgg + ggplot2::ggtitle(paste0(label, " Quality Plots"))		
 	}
 
 	## Return plot (only one plot is generated per dataset)
+	save(plotAgg, file = "quality_distribution.RData")
 	return(plotAgg)
 
 }

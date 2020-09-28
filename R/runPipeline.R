@@ -19,13 +19,11 @@ NULL
 #' @param generateReport Default is FALSE. If TRUE, allows a FASTQC report to be generated from input data.
 #' 
 #' @export
-runPipeline <- function(configFile, isPaired = FALSE, plotQuality = TRUE, mergeSamples = TRUE, downloadSeqs = FALSE,
-				trimAdapters = FALSE, generateReport = FALSE) {
+runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = FALSE,
+				getTrimmedAdapters = FALSE, getGeneratedReport = FALSE) {
 	if (!file.exists(configFile)) {
 			stop(sprintf("'%s' could not be found, please enter a valid path", configFile))
 	}
-	# Load all methods in package
-	devtools::load_all()
 	
 	# Parse YAML file
 	options <- yaml::yaml.load_file(configFile)
@@ -59,56 +57,84 @@ runPipeline <- function(configFile, isPaired = FALSE, plotQuality = TRUE, mergeS
 		message("\nAnalyzing data for ", options$projectPrefix)
 
 		# Print package versions
-		message("R version: ", version$version.string)
-		message("DADA2 Version: ", packageVersion("dada2"))
-		message("YAML Version: ", packageVersion("yaml"))
-		if (generateReport) { message("FASTQCR Version: ", packageVersion("fastqcr")) }
+		message("\nR version: ", version$version.string)
+		message("\nDADA2 Version: ", packageVersion("dada2"))
+		message("\nYAML Version: ", packageVersion("yaml"))
+		if (getGeneratedReport) { message("\nFASTQCR Version: ", packageVersion("fastqcr")) }
 		
 		# Download sequences - tested on 8/26/2020
-		if (downloadSeqs) {
+		if (getDownloadedSeqs == TRUE) {
+			message("\n==== Downloading sequences from NCBI ====")
 			object <- readConfig(configFile, type = "seqdump")
 			fp <- getSeqs(object)
+		} else {
+		  # Do nothing
 		}
 		
 		# Remove primers and update path
-		if (trimAdapters) {
-			message("==== Removing Primers ====")
+		if (getTrimmedAdapters) {
+			message("\n==== Removing Primers ====")
 			object <- readConfig(configFile, type = "primertrim")
-			fp <- removePrimers(object)
+			fp <- trimAdapters(object)
 		} else {
-			fp <- options$inDir
+			fp <- options$pathToData
 		}
 		
 		# Run FASTQCR
-		if (generateReport & !file.exists(file.path(options$pathToFastqcResults, paste0(options$projectPrefix, "_fastqc_report.html")))) {
+		if (getGeneratedReport & !file.exists(file.path(options$pathToFastqcResults, paste0(options$projectPrefix, "_fastqc_report.html")))) {
+
 			message("==== Generating FASTQC Files for Data====")
 			object <- readConfig(configFile, type = "report")
 			results <- runFastqcr(object, fp)
 		}
 
-		# Get file extension pattern
-		if (!is.null(options$fastaPattern)) {
-			REGEX_PAT <- options$fastaPattern
-		} else {
-			REGEX_PAT <- "^.*[1,2]?.fastq(.gz)?$"
+		# Plot Quality Distribution and save object
+		if (getQuality) {
+			message("=== Plotting quality distribution BEFORE trimming ===")
+			object <- readConfig(configFile, type = "qualityplot")
+			plots <- plotQuality(fp, options$projectPrefix, object)
+			
+			# Write PDF files in output directory
+			if (!is.null(plots)) {
+				pdf(file = paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf"))
+					plots
+				dev.off()
+			} else {
+				stop("Unable to write quality plots to PDF") # Should rarely execute. Mostly for debugging purposes
+			}
 		}
 			
 		if (isPaired) {
+			 # Get file extension pattern
+                	if (!is.null(options$fastaPattern) & length(options$fastaPattern) == 2) {
+                       		REGEX_PAT <- options$fastaPattern
+               	 	} else {
+				message("Regex pattern(s) provided for fastaPattern were rejected. Expected 2 found ", length(options$fastaPattern), ". Using defaults instead")
+                       		REGEX_PAT <- c("^.*\\.1\\.fastq(.gz)?$", "^.*\\.2\\.fastq(.gz)?$")
+			}
+
 			# Extract SRA sample ids
 			sample.names <- sapply(strsplit(basename(sort(list.files(fp, pattern = REGEX_PAT, full.names = TRUE))), REGEX_PAT), `[`, 1)
 			
 			# === Analyze as paired-end data ===
-			amplicons <- paired_analysis(fp, sample.names, configFile)
+			amplicons <- paired_analysis(fp = fp, sample.names = sample.names, file = configFile, REGEX_1 = REGEX_PAT[1], REGEX_2 = REGEX_PAT[2])
 			
 			# Generate read frequency tables
 			freq.seqtabs <- mapply(makeSeqsTable, dadaObj=amplicons, sample.name = sample.names, SIMPLIFY = FALSE)
 			
 		} else {
+			# Get file extension pattern
+                        if (!is.null(options$fastaPattern) & length(options$fastaPattern) == 1) {
+                                REGEX_PAT <- options$fastaPattern
+                        } else {
+                                REGEX_PAT <- "\\.fastq(.gz)?$"
+                        }
+			
 			# Extract SRA sample ids
 			sample.names <- sapply(strsplit(basename(sort(list.files(fp, pattern = REGEX_PAT, full.names = TRUE))), REGEX_PAT), `[`, 1)
 			
 			# === Analyze as single-end data ===
-			amplicons <- single_analysis(fp, sample.names, configFile, REGEX_PAT)
+			amplicons <- single_analysis(fp = fp, sample.names = sample.names, file = configFile, REGEX = REGEX_PAT)
 			
 			# Generate read frequency tables
 			freq.seqtabs <- mapply(makeSeqsTable, dadaObj=amplicons, sample.name=sample.names, SIMPLIFY = FALSE)
@@ -153,20 +179,20 @@ runPipeline <- function(configFile, isPaired = FALSE, plotQuality = TRUE, mergeS
 		# Switch working directory back to original
 		setwd(curr.wd)
 	
-		print("Done!")
+		print("Done! All outputs were sucessfully generated.")
 }
 
-single_analysis <- function(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.gz)?$") {
+single_analysis <- function(fp, sample.names, file, REGEX = "\\.fastq(.gz)?$") {
 	# Sort path to extract all .fastq files (external variables can be accessed)
-	Fs <- sort(list.files(fp, pattern = pattern, full.names = TRUE))
+	Fs <- sort(list.files(fp, pattern = REGEX, full.names = TRUE))
+
+	# Create object - simplifies debugging process
+        object <- readConfig(file, isPaired = FALSE, type = c('auto', 'filter'))
 
 	# Filter and Trim (generates "filtered_objects.RData" file)
 	message("==== Filtering and Trimming Amplicon Sequences ====")
-	filtFs <- filtTrim(Fs, object) #TODO: Allow object to be passed to filtTrim function 
+	filtFs <- mapply(filtTrim, object=object, sample.names=sample.names)
 
-	# Create object - simplifies debugging process
-	object <- readConfig(file, isPaired = FALSE, type = c('auto', 'filter'))
-	
 	# Dereplicate Sequences
 	message("==== Dereplicating sequences ====")
 	derepFs <- lapply(filtFs, dada2::derepFastq, derepN = object@derepN)
@@ -189,11 +215,7 @@ single_analysis <- function(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.
 	
 	# Track changes
 	getSeqN <- function(x) sum(getUniques(x))
-	if (nzchar(system.file(package = "HTSeqGenie"))) {
-		read.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-		read.out <- lapply(filtFs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-		track <- cbind(sample.names, read.in, read.out, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
-	} else {
+	if (file.exists("filtered_objects.RData")) {
 		load("filtered_objects.RData") # Loads saveFilt object to current environment
 		track <- cbind(saveFilt, sapply(derepFs, getSeqN), sapply(dadaFs, getSeqN))
 	}
@@ -209,10 +231,13 @@ single_analysis <- function(fp, sample.names, file, pattern = "^.*[1,2]?.fastq(.
 	return(dadaFs)
 }
 
-paired_analysis <- function(fp, sample.names, object) {
-	# Sort path to extract all .fastq files (allows .fastq, .fq or .fastq.gz file extensions)
-	Fs <- sort(list.files(fp, pattern = "*_1.fastq(.gz)?$", full.names = TRUE))
-	Rs <- sort(list.files(fp, pattern = "*_2.fastq(.gz)?$", full.names = TRUE))
+paired_analysis <- function(fp, sample.names, file, REGEX_1 = "*_1.fastq(.gz)?$", REGEX_2 = "*_2.fastq(.gz)?$" ) {
+	# Create object - simplifies debugging process
+        object <- readConfig(file, isPaired = TRUE, type = c('auto', 'filter'))
+
+	# Sort path to extract all .fastq files (allows .fastq or .fastq.gz file extensions)
+	Fs <- sort(list.files(fp, pattern = REGEX_1, full.names = TRUE))
+	Rs <- sort(list.files(fp, pattern = REGEX_2, full.names = TRUE))
 	
 	# Filter and Trim
 	message("==== Filtering and Trimming Paired-End Amplicon Sequences ====")
@@ -263,24 +288,17 @@ paired_analysis <- function(fp, sample.names, object) {
 		stop("Number of dada objects does not equal number of samples")
 	}
 	
-	# Count number of reads in sequences (load HTSeqGenie library)
+	# Count number of reads in sequences (load HTSeqGenie library) # TODO: Find alternative
 	getSeqN <- function(x) sum(getUniques(x))
 	
 	forward.derep <- sapply(derepFs, getSeqN)
 	reverse.derep <- sapply(derepRs, getSeqN)
 	forward.dada <- sapply(dadaFs, getSeqN)
 	reverse.dada <- sapply(dadaRs, getSeqN)
+
 	merged <- sapply(merged_amplicons, getSeqN)
 
-	if (nzchar(system.file(package = "HTSeqGenie"))) {
-		forward.in <- lapply(Fs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-		forward.out <- lapply(filt.forward, HTSeqGenie::getNumberOfReadsInFASTQFile)
-		reverse.in <- lapply(Rs, HTSeqGenie::getNumberOfReadsInFASTQFile)
-		reverse.out <- lapply(filt.reverse, HTSeqGenie::getNumberOfReadsInFASTQFile)
-			
-		# Combine all information
-		track <- cbind(sample.names, forward.in, forward.out, reverse.in, reverse.out, forward.derep, reverse.derep, forward.dada, reverse.dada, merged)
-	} else {
+	if (file.exists("filtered_objects")) {
 		load("filtered_objects") # Load saveFilt obect in current environment
 		
 		# Combine all information

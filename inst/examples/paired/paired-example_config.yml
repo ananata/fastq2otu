@@ -9,6 +9,7 @@ pathToData: fastq2otu/inst/examples/paired/output/seq_files
 verbose: TRUE
 multithread: TRUE
 pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Optional: Provide when using fastq-dump
+# fastaPattern: ["^.*1\\.fastq(.gz)?$", "^.*1\\.fastq(.gz)?$"] # -- Use for paired-end data (modify to suit needs - quotation marks are required)
 fastaPattern: ^.*[1,2]?.fastq(.gz)?$
 
 # === Trimming Adapters ===
@@ -61,22 +62,22 @@ chimeraDetectionAllowOneOff: false
 chimeraDetectionMaxShift: 16
 
 # === Filtering (Single-end data example)
-filtMaxEE: 2.5
-filtTruncQ: 0
-filtTruncLen: 0
-filtTrimLeft: 0
-filtTrimRight: 0
-filtMatchIDs: false
-filtMinLen: 50
+# filtMaxEE: 2.5
+# filtTruncQ: 0
+# filtTruncLen: 0
+# filtTrimLeft: 0
+# filtTrimRight: 0
+# filtMatchIDs: false
+# filtMinLen: 50
 
 # === Filtering (Paired-end data example)
-# filtMaxEE: [2.5, 2.5]
-# filtTruncQ: [0, 0]
-# filtTruncLen: [0, 0]
-# filtTrimLeft: [0, 0]
-# filtTrimRight: [0, 0]
-# filtMatchIDs: false
-# filtMinLen: [50, 50]
+filtMaxEE: [2.5, 2.5]
+filtTruncQ: [0, 0]
+filtTruncLen: [0, 0]
+filtTrimLeft: [0, 0]
+filtTrimRight: [0, 0]
+filtMatchIDs: false
+filtMinLen: [50, 50]
 
 # === Merge Paired-end Reads ===
 mergePairs: false

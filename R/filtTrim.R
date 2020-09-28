@@ -27,7 +27,7 @@ filtTrim <- function(object, sample.names) {
 		
 		# Save important R objects (needed for summary table)
 		saveFilt <- filtTrim
-		save(saveFilt, file = "filtered_objects.RData")
+		save(saveFilt, file = file.path(path, "filtered_objects.RData"))
 		
 		# Return both paths
 		return(c(filtFs, filtRs))
@@ -54,7 +54,7 @@ filtTrim <- function(object, sample.names) {
 		
 		# Save important R objects (needed for summary table)
 		saveFilt <- filtTrim
-		save(saveFilt, file = "filtered_objects.RData")
+		save(saveFilt, file = file.path(path, "filtered_objects.RData"))
 	}
 
 	# Return paths

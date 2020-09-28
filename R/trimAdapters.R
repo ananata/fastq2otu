@@ -24,7 +24,7 @@ trimAdapters <- function(object) {
 			orient = object@orientReads, compress = object@compressFiles, verbose = object@verbose)
 	    return(object@pathToNoPrimers)
 	  } else {
-	    stop(paste0("Expected two adapter sequences from file, got " length(adapters) " instead.)
+	    stop(paste0("Expected two adapter sequences from file, got ", length(adapters), " instead."))
 	  }
 	} else {
 	  if (length(adapters) == 1) {
@@ -34,7 +34,7 @@ trimAdapters <- function(object) {
                 orient = object@orientReads, compress = object@compressFiles, verbose = object@verbose)
 	    return(object@pathToNoPrimers)
 	  } else {
-	     	stop(paste0("Expected one adapter sequence from file, got " length(adapters) " instead.)
+	     	stop(paste0("Expected one adapter sequence from file, got ", length(adapters), " instead."))
 	  }
 	}		
 }

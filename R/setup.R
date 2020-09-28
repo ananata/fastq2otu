@@ -146,7 +146,7 @@ check_filt_params <- function(object) {
 	errors <- character()
 	if (object@isPaired) {
 		if (length(object@filtMaxEE) != 2) {
-			msg <- "Invalid input. Expected two values for filtMaxEE"
+			msg <- paste0("Invalid input. Expected two values for filtMaxEE got ", object@filtMaxEE)
 			errors <- c(errors, msg)
 		}
 		if (length(object@filtTruncQ) != 2) { 
@@ -169,8 +169,7 @@ check_filt_params <- function(object) {
 			msg <- "Invalid input. Expected two values for filtMinLen"
                         errors <- c(errors, msg)
 		}
-	}
-	else {
+	} else {
 		if (length(object@filtMaxEE) != 1) {
 			msg <- "Invalid input. Expected a single value for filtMaxEE"
 						errors <- c(errors, msg)
