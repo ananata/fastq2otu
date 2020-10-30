@@ -1,8 +1,19 @@
 # FASTQ2OTU
+> :warning: **This package is still under active development**: The current available code is subject to change at anytime and is not completely error-proof. 
 
 FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing, and processing large-scale microbiome rRNA gene data obtained from NCBI's SRA database. The package uses many functions from [DADA2](https://github.com/benjjneb/dada2 "Github") to analyze sequence data. The primary objective of FASTQ2OTU is to (1) increase the reproducibility of microbiome analysis and (2) encourage the analysis of archived data to obtain new knowledge. This 
 
-FASTQ2OTU's workflow can be broken down into multiple stages. 
+FASTQ2OTU's workflow can be broken down into multiple stages:
+1. Get Sequences - Sequences can be downloaded using [FASTQDUMP](https://ncbi.github.io/sra-tools/fastq-dump.html) or `wget` (if FTP links are available).
+2. Adapter Trimming - Optional: Primers can be removed in this step or during the filtering step. 
+3. Plot Quality Distribution - Generate a figure that shows the quality distribution of the dataset. This step can be run independently if necessary. 
+4. Filter and Trim
+5. Learn Errors and Denoise
+6. Find and Remove Chimeric Sequences
+7. Merge Paired-End Sequences
+8. Assign Taxonomy
+9. Merge OTU Tables - Merges individual OTU tables to create a mega-table that can used in downstream analyses. 
+
 #### Advantages of using FASTQ2OTU
 * ##### Documentation is simplified
 * ##### Integrated workflow
@@ -128,6 +139,7 @@ This license restricts the usage of this application for non-open sourced system
 We would like to thank the following, without whom this would not have happened:
 * Virginia Commonwealth University - Vaginal Microbiome Consortium
 * University of Texas - Austin
+* Original Developers of DADA2
 
 
 
