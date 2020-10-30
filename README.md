@@ -1,8 +1,8 @@
 # FASTQ2OTU
 
-FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing, and processing microbiome rRNA gene data obtained from NCBI's SRA database. The package uses many functions from [DADA2](https://github.com/benjjneb/dada2 "Github") to analyze sequence data. The primary objective of FASTQ2OTU is to (1) increase the reproducibility of microbiome analysis and (2) encourage the analysis of archived data to obtain new knowledge. 
+FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing, and processing large-scale microbiome rRNA gene data obtained from NCBI's SRA database. The package uses many functions from [DADA2](https://github.com/benjjneb/dada2 "Github") to analyze sequence data. The primary objective of FASTQ2OTU is to (1) increase the reproducibility of microbiome analysis and (2) encourage the analysis of archived data to obtain new knowledge. This 
 
-FASTQ2OTU's workflow can be broken down into 
+FASTQ2OTU's workflow can be broken down into multiple stages. 
 #### Advantages of using FASTQ2OTU
 * ##### Documentation is simplified
 * ##### Integrated workflow
@@ -89,7 +89,6 @@ devtools::install_github("ananata/fastq2otu")
 library("ananata/fastq2otu")
 
 ```
-## Running FASTQ2OTU
 
 ### Using a config file
 
@@ -106,39 +105,18 @@ library("ananata/fastq2otu")
 |listOfAdapters|Character|N/A|Required if trimPrimers is TRUE. Path to a list of adapter sequence to be removed using [bbduk.sh](https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/)|
 |pathToBBDuk|Character|N/A|Path to bbduk.sh script (should be kept in BBTools root directory. Refer to BBTools [0documentation] (https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/) for more information.)|
 |pathToRawFastq|Character|N/A|Required if trimPrimers is TRUE. Path to directory containing untrimmed sequences. |
-| projectPrefix ||||
-| outDir ||||
-| pathToData ||||
-| isPaired |||| 
-| listOfAdapters ||||
-| pathToRawFastq ||||
-| pathToNoPrimers ||||
-| aggregateQual ||||
-| qualN||||
-|runFastqDump||||
-|pathToSampleIDs||||
-|runFastqc||||
-|pathToFastqcResults||||
-|fastqcThreads||||
-|fastqcExperimentDescription||||
-
-### Package Walkthrough
-
-
-
-## FASTQ2OTU output
-
-
-## Contributing
-
-
-## Versioning
-
+| projectPrefix |Character|"myproject"| Prefix to append to newly created files (i.e. <myproject>_filtered_files/ is created to store filtered files)|
+| outDir |Character|N/A| Path to directory that will store all output data. |
+| pathToData |Character|N/A|Path to directory storing all input data.|
+| isPaired |Logical|FALSE|Boolean statement that if data being handled is paired-end (TRUE) or single (FALSE).| 
+| aggregateQual |Logical|N/A|Provide TRUE if you would like to aggregate your quality profile diagram. |
+| qualN||Numeric|0|Enter the number of bases to sample to learn seqence error rates.|
+|runFastqDump|Logical|FALSE|Provide TRUE if you would like to download sequences using a locally installed version of SRA's FASTQDUMP|
+|pathToSampleIDs|Character|N/A|Provide the path to a text file containing SRA IDs. |
 
 ## Authors
 
 - **Nana Afia Twumasi-Ankrah** - *Primary developer*
-
 
 ## License
 
@@ -148,9 +126,9 @@ This license restricts the usage of this application for non-open sourced system
 ## Acknowledgments
 
 We would like to thank the following, without whom this would not have happened:
-* Virginia Commonwealth University
+* Virginia Commonwealth University - Vaginal Microbiome Consortium
 * University of Texas - Austin
-* TODO: Add all acknowledgements
+
 
 
 
