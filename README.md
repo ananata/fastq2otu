@@ -1,5 +1,5 @@
 # FASTQ2OTU
-> :warning: **This package is still under active development**: The information below is subject to change at anytime and is not completely error-proof. 
+> :warning: **This package is still under active development**: The information below is subject to change at anytime and is not completely error-proof (yet). 
 
 FASTQ2OTU was developed as a easy and effective tool for downloading, analyzing, and processing large-scale microbiome rRNA gene data obtained from NCBI's SRA database. The package uses many functions from [DADA2](https://github.com/benjjneb/dada2 "Github") to analyze sequence data. The primary objective of FASTQ2OTU is to (1) increase the reproducibility of microbiome analysis and (2) encourage the analysis of archived data to obtain new knowledge. This 
 
