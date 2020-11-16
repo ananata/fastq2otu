@@ -7,7 +7,9 @@
 setFastSingle(
   inDir,
   outDir,
+  validate = TRUE,
   verbose = FALSE,
+  pattern = ".*.fastq(.gz)?",
   prefix = "myproject",
   isPaired = FALSE,
   derepN = 1e+06,
@@ -33,7 +35,11 @@ setFastSingle(
 
 \item{outDir}{Required input. Path to write output files.}
 
+\item{validate}{Default is TRUE. Executes normal validation steps}
+
 \item{verbose}{Default is FALSE. Sets verbose parameter for DADA2 methods.}
+
+\item{pattern}{Regex pattern used to select fastq files from directory.}
 
 \item{prefix}{Default is "myproject". Project-specific label that will be included in the names of all files and directories created.}
 

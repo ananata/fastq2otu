@@ -11,7 +11,7 @@
 #' @param type Default is 'auto'. String or vector containing the following value(s): 'auto', 'assignTax', 'report', 'seqdump', 'primertrim', 'filter', 'qualityplot'. Used to specify what type of object is being created.
 #' If a vector is provided it must contain one of the following combination of strings c('auto', 'assignTax') and  c('auto', 'filter')
 #' @return An S4 object
-#' @keyword internal
+#' @importFrom yaml yaml.load_file
 #' @export
 readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 	
@@ -32,45 +32,45 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 	if ("assignTax" %in% type & isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
-					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-					minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50), 
-					tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
-					showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
+					prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+					minBootstrap = `if`(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50), 
+					tryComplement = `if`(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
+					showBootstraps = `if`(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
 					taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
-					verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE), 
-					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+					verbose = `if`(!is.null(options$verbose), options$verbose, FALSE), 
+					multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 		} 
 		else if ('auto' %in% type & length(type) == 2) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase,
-                                        prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-                                        minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50),
-                                        tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE),
-                                        showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE),
+                                        prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+                                        minBootstrap = `if`(!is.null(options$assignTaxMinBootstrap), options$assignTaxMinBootstrap, 50),
+                                        tryComplement = `if`(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE),
+                                        showBootstraps = `if`(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE),
                                         taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
-                                        verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-                                        multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+                                        verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+                                        multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 			
 			mytemp@inDir <- options$pathToData
 			mytemp@outDir <- options$outDir 
-			mytemp@mergeSeqs <- ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE) 
-			mytemp@trimOverhang <- ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
-			mytemp@minOverlap <- ifelse(!is.null(options$mergePairsMinOverlap), options$mergePairsMinOverlap, 12)
-			mytemp@maxMismatch <- ifelse(!is.null(options$mergePairsMaxMismatch), options$mergePairsMaxMismatch, 0)
-			mytemp@	returnRejects <- ifelse(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
-			mytemp@justConcatenate <- ifelse(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
+			mytemp@doMergeSeqPairs <- `if`(!is.null(options$mergePairs), options$mergePairs, FALSE) 
+			mytemp@mergeSeqPairsTrimOverhang <- `if`(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
+			mytemp@mergeSeqPairsMinOverlap <- `if`(!is.null(options$mergePairsMinOverlap), options$mergePairsMinOverlap, 12)
+			mytemp@mergeSeqPairsMaxMismatch <- `if`(!is.null(options$mergePairsMaxMismatch), options$mergePairsMaxMismatch, 0)
+			mytemp@mergeSeqPairsReturnRejects <- `if`(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
+			mytemp@mergeSeqPairsJustConcatenate <- `if`(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
 			mytemp@isPaired <- TRUE
-			mytemp@derepN <- ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
-			mytemp@getErrPDF <- ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
-			mytemp@errN <- ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
-			mytemp@dadaBandSize <- ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16) 
-			mytemp@dadaOmegaA <- ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
-			mytemp@getChimeraTable <- ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
-			mytemp@minSampleFraction <- ifelse(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9) 
-			mytemp@ignoreNegatives <- ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
-			mytemp@minFoldParentOverAbundance <- ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5) 
-			mytemp@detectionAbundance <- ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2) 
-			mytemp@allowOneOff <- ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
-			mytemp@maxShift <- ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
+			mytemp@derepN <- `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
+			mytemp@saveErrorsPlotPDF <- `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
+			mytemp@errN <- `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
+			mytemp@dadaBandSize <- `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16) 
+			mytemp@dadaOmegaA <- `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
+			mytemp@createChimeraDetectionTable <- `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
+			mytemp@chimeraDetectionMinSampleFraction <- `if`(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9) 
+			mytemp@chimeraDetectionIgnoreNegatives <- `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
+			mytemp@chimeraDetectionMinFoldParentOverAbundance <- `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5) 
+			mytemp@chimeraDetectionParentAbundance <- `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2) 
+			mytemp@chimeraDetectionAllowOneOff <- `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
+			mytemp@chimeraDetectionMaxShift <- `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
 		}
 		else {
 			stop("Invalid type input(s) provided")
@@ -80,53 +80,53 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 		if (length(type) == 1) {
 			mytemp <- setFastFilter(inDir = options$pathToData,
 					outDir = options$outDir,
-					verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
-					maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)), 
-					truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)), 
-					truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)), 
-					trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
-					trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)), 
-					matchIDs = ifelse(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE), 
-					minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
+					verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+					prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
+					maxEE = `if`(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)), 
+					truncQ = `if`(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)), 
+					truncLen = `if`(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)), 
+					trimLeft = `if`(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
+					trimRight = `if`(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)), 
+					matchIDs = `if`(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE), 
+					minLen = `if`(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
 					isPaired = TRUE, 
-					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
+					multithread = `if`(!is.null(options$multithread), options$multithread, FALSE)) 
 		}
 		else if ("auto" %in% type & length(type) == 2) { 
 			mytemp <- setFastFilter(inDir = options$pathToData,
                                         outDir = options$outDir,
-                                        verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-                                        prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-                                        maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)),
-                                        truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)),
-                                        truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)),
-                                        trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
-                                        trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)),
-                                        matchIDs = ifelse(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE),
-                                        minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
+                                        verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+                                        prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+                                        maxEE = `if`(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), c(2.5, 2.5)),
+                                        truncQ = `if`(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), c(0, 0)),
+                                        truncLen = `if`(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), c(0, 0)),
+                                        trimLeft = `if`(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), c(0, 0)),
+                                        trimRight = `if`(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), c(0, 0)),
+                                        matchIDs = `if`(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE),
+                                        minLen = `if`(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), c(50, 50)),
                                         isPaired = TRUE,
-                                        multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+                                        multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 
 
 			
-			mytemp@allowOneOff <- ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE) 
-			mytemp@dadaBandSize <- ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16) 
-			mytemp@dadaOmegaA <- ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40) 
-			mytemp@derepN <- ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
-			mytemp@detectionAbundance <- ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2) 
-			mytemp@errN <- ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
-			mytemp@getChimeraTable <- ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE) 
-			mytemp@getErrPDF <- ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
-			mytemp@ignoreNegatives <- ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1) 
-			mytemp@justConcatenate <- ifelse(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
-			mytemp@maxMismatch <- ifelse(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0)
-			mytemp@maxShift <- ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
-			mytemp@mergeSeqs <- ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE)
-			mytemp@minFoldParentOverAbundance = ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5) 
-			mytemp@minOverlap <- ifelse(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12)
-			mytemp@minSampleFraction <- ifelse(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9) 
-			mytemp@returnRejects <- ifelse(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE) 
-			mytemp@trimOverhang <- ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
+			mytemp@chimeraDetectionAllowOneOff <- `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE) 
+			mytemp@dadaBandSize <- `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16) 
+			mytemp@dadaOmegaA <- `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40) 
+			mytemp@derepN <- `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
+			mytemp@chimeraDetectionParentAbundance <- `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2) 
+			mytemp@errN <- `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
+			mytemp@createChimeraDetectionTable <- `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE) 
+			mytemp@saveErrorsPlotPDF <- `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
+			mytemp@chimeraDetectionIgnoreNegatives <- `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1) 
+			mytemp@mergeSeqPairsJustConcatenate <- `if`(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
+			mytemp@mergeSeqPairsMaxMismatch <- `if`(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0)
+			mytemp@chimeraDetectionMaxShift <- `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
+			mytemp@doMergeSeqPairs <- `if`(!is.null(options$mergePairs), options$mergePairs, FALSE)
+			mytemp@chimeraDetectionMinFoldParentOverabundance = `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5) 
+			mytemp@mergeSeqPairsMinOverlap <- `if`(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12)
+			mytemp@chimeraDetectionMinSampleFraction <- `if`(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9) 
+			mytemp@mergeSeqPairsReturnRejects <- `if`(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects,FALSE)
+ 			mytemp@mergeSeqPairsTrimOverhang <- `if`(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
 		}
 		else {
 			stop("Invalid type input(s) provided")
@@ -136,92 +136,92 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 		# fastPaired object is created
 		mytemp <- setFastPaired(inDir = options$pathToData,
 							outDir = options$outDir, 
-							mergeSeqs = ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE), 
-							trimOverhang = ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE),
-							minOverlap = ifelse(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12),
-							maxMismatch = ifelse(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0), 
-							returnRejects = ifelse(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE), 
-							justConcatenate = ifelse(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE),
-							verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-							prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+							mergeSeqs = `if`(!is.null(options$mergePairs), options$mergePairs, FALSE), 
+							trimOverhang = `if`(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE),
+							minOverlap = `if`(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12),
+							maxMismatch = `if`(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0), 
+							returnRejects = `if`(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE), 
+							justConcatenate = `if`(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE),
+							verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+							prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
 							isPaired = TRUE, 
-							derepN = ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06),
-							getErrPDF = ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE),
-							errN = ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08), 
-							multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE),
-							dadaBandSize = ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16), 
-							dadaOmegaA = ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40), 
-							getChimeraTable = ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE), 
-							minSampleFraction = ifelse(!is.null(options$chimeraDetectionMinSampleFraction), options$chimeraDetectionMinSampleFraction, 0.9), 
-							ignoreNegatives = ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1), 
-							minFoldParentOverAbundance = ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5), 
-							detectionAbundance = ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2), 
-							allowOneOff = ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
-							maxShift = ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
+							derepN = `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06),
+							getErrPDF = `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE),
+							errN = `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08), 
+							multithread = `if`(!is.null(options$multithread), options$multithread, FALSE),
+							dadaBandSize = `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16), 
+							dadaOmegaA = `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40), 
+							getChimeraTable = `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE), 
+							minSampleFraction = `if`(!is.null(options$chimeraDetectionMinSampleFraction), options$chimeraDetectionMinSampleFraction, 0.9), 
+							ignoreNegatives = `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1), 
+							minFoldParentOverAbundance = `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5), 
+							detectionAbundance = `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2), 
+							allowOneOff = `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
+							maxShift = `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
 	}
 	else if (all("auto" == type) & !isPaired) {
 		mytemp <- setFastSingle(inDir = options$pathToData,
 							outDir = options$outDir, 
-							verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-							prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+							verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+							prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
 							isPaired = FALSE, 
-							derepN = ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06),
-							getErrPDF = ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE),
-							errN = ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08), 
-							multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE),
-							dadaBandSize = ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16), 
-							dadaOmegaA = ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40), 
-							getChimeraTable = ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE), 
-							minSampleFraction = ifelse(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9), 
-							ignoreNegatives = ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1), 
-							minFoldParentOverAbundance = ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5), 
-							detectionAbundance = ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2), 
-							allowOneOff = ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
-							maxShift = ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
+							derepN = `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06),
+							getErrPDF = `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE),
+							errN = `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08), 
+							multithread = `if`(!is.null(options$multithread), options$multithread, FALSE),
+							dadaBandSize = `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16), 
+							dadaOmegaA = `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40), 
+							getChimeraTable = `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE), 
+							minSampleFraction = `if`(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9), 
+							ignoreNegatives = `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1), 
+							minFoldParentOverAbundance = `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5), 
+							detectionAbundance = `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2), 
+							allowOneOff = `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE), 
+							maxShift = `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16))
 	}
 	else if ("assignTax" %in% type & !isPaired) {
 		if (length(type) == 1) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase, 
-						prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-						minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
-						tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
-						showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
+						prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+						minBootstrap = `if`(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50), 
+						tryComplement = `if`(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE), 
+						showBootstraps = `if`(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE), 
 						taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
-						verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE), 
-						multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+						verbose = `if`(!is.null(options$verbose), options$verbose, FALSE), 
+						multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 		}
 		else if ("auto" %in% type & length(type) == 2) {
 			mytemp <- setFastAssignTaxa(refDatabase = options$taxDatabase,
-                                                prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-                                                minBootstrap = ifelse(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50),
-                                                tryComplement = ifelse(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE),
-                                                showBootstraps = ifelse(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE),
+                                                prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+                                                minBootstrap = `if`(!is.null(options$assignTaxMinBootstrap), as.numeric(as.character(options$assignTaxMinBootstrap)), 50),
+                                                tryComplement = `if`(!is.null(options$assignTaxTryComplement), options$assignTaxTryComplement, FALSE),
+                                                showBootstraps = `if`(!is.null(options$assignTaxOutputBootstraps), options$assignTaxOutputBootstraps, FALSE),
                                                 taxLevels = `if`(!is.null(options$assignTaxLevels), as.vector(options$assignTaxLevels), c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")),
-                                                verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-                                                multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+                                                verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+                                                multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 
 		
 			mytemp@inDir <- options$pathToData
                         mytemp@outDir <- options$outDir
-                        mytemp@mergeSeqs <- ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE)
-                        mytemp@trimOverhang <- ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
-                        mytemp@minOverlap <- ifelse(!is.null(options$mergePairsMinOverlap), options$mergePairsMinOverlap, 12)
-                        mytemp@maxMismatch <- ifelse(!is.null(options$mergePairsMaxMismatch), options$mergePairsMaxMismatch, 0)
-                        mytemp@ returnRejects <- ifelse(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
-                        mytemp@justConcatenate <- ifelse(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
+                        mytemp@doMergeSeqPairs <- `if`(!is.null(options$mergePairs), options$mergePairs, FALSE)
+                        mytemp@mergeSeqPairsTrimOverhang <- `if`(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
+                        mytemp@mergeSeqPairsMinOverlap <- `if`(!is.null(options$mergePairsMinOverlap), options$mergePairsMinOverlap, 12)
+                        mytemp@mergeSeqPairsMaxMismatch <- `if`(!is.null(options$mergePairsMaxMismatch), options$mergePairsMaxMismatch, 0)
+                        mytemp@mergeSeqPairsReturnRejects <- `if`(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
+                        mytemp@mergeSeqPairsJustConcatenate <- `if`(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
                         mytemp@isPaired <- FALSE
-                        mytemp@derepN <- ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
-                        mytemp@getErrPDF <- ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
-                        mytemp@errN <- ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
-                        mytemp@dadaBandSize <- ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16)
-                        mytemp@dadaOmegaA <- ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
-                        mytemp@getChimeraTable <- ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
-                        mytemp@minSampleFraction <- ifelse(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9)
-                        mytemp@ignoreNegatives <- ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
-                        mytemp@minFoldParentOverAbundance <- ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5)
-                        mytemp@detectionAbundance <- ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2)
-                        mytemp@allowOneOff <- ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
-                        mytemp@maxShift <- ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
+                        mytemp@derepN <- `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
+                        mytemp@saveErrorsPlotPDF <- `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
+                        mytemp@errN <- `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
+                        mytemp@dadaBandSize <- `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16)
+                        mytemp@dadaOmegaA <- `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
+                        mytemp@createChimeraDetectionTable <- `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
+                        mytemp@chimeraDetectionMinSampleFraction <- `if`(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9)
+                        mytemp@chimeraDetectionIgnoreNegatives <- `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
+                        mytemp@chimeraDetectionMinFoldParentOverabundance <- `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5)
+                        mytemp@chimeraDetectionParentAbundance <- `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2)
+                        mytemp@chimeraDetectionAllowOneOff <- `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
+                        mytemp@chimeraDetectionMaxShift <- `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
 
 								
 		}
@@ -233,52 +233,52 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 		if (length(type) == 1) {
 			mytemp <- setFastFilter(inDir = options$pathToData,
 					outDir = options$outDir, 
-					verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-					prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
-					maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), 2.5), 
-					truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), 0), 
-					truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), 0), 
-					trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), 0),
-					trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), 0), 
-					minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), 50),
+					verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+					prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"), 
+					maxEE = `if`(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), 2.5), 
+					truncQ = `if`(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), 0), 
+					truncLen = `if`(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)), 0), 
+					trimLeft = `if`(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), 0),
+					trimRight = `if`(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), 0), 
+					minLen = `if`(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), 50),
 					isPaired = FALSE, 
-					multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE)) 
+					multithread = `if`(!is.null(options$multithread), options$multithread, FALSE)) 
 		}		
 		else if ("auto" %in% type & length(type) == 2) {
 			mytemp <- setFastFilter(inDir = options$pathToData,
                                         outDir = options$outDir,
-                                        verbose = ifelse(!is.null(options$verbose), options$verbose, FALSE),
-                                        prefix = ifelse(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
-                                        maxEE = ifelse(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), 2.5),
-                                        truncQ = ifelse(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), 0),
-                                        truncLen = ifelse(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)),0),
-                                        trimLeft = ifelse(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), 0),
-                                        trimRight = ifelse(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), 0),
-                                        matchIDs = ifelse(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE),
-                                        minLen = ifelse(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), 50),
+                                        verbose = `if`(!is.null(options$verbose), options$verbose, FALSE),
+                                        prefix = `if`(!is.null(options$projectPrefix), options$projectPrefix, "myproject"),
+                                        maxEE = `if`(!is.null(options$filtMaxEE), as.numeric(as.character(options$filtMaxEE)), 2.5),
+                                        truncQ = `if`(!is.null(options$filtTruncQ), as.numeric(as.character(options$filtTruncQ)), 0),
+                                        truncLen = `if`(!is.null(options$filtTruncLen), as.numeric(as.character(options$filtTruncLen)),0),
+                                        trimLeft = `if`(!is.null(options$filtTrimLeft), as.numeric(as.character(options$filtTrimLeft)), 0),
+                                        trimRight = `if`(!is.null(options$filtTrimRight), as.numeric(as.character(options$filtTrimRight)), 0),
+                                        matchIDs = `if`(!is.null(options$filtMatchIDs), options$filtMatchIDs, FALSE),
+                                        minLen = `if`(!is.null(options$filtMinLen), as.numeric(as.character(options$filtMinLen)), 50),
                                         isPaired = FALSE,
-                                        multithread = ifelse(!is.null(options$multithread), options$multithread, FALSE))
+                                        multithread = `if`(!is.null(options$multithread), options$multithread, FALSE))
 
 
 
-                        mytemp@allowOneOff <- ifelse(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
-                        mytemp@dadaBandSize <- ifelse(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16)
-                        mytemp@dadaOmegaA <- ifelse(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
-                        mytemp@derepN <- ifelse(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
-                        mytemp@detectionAbundance <- ifelse(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2)
-                        mytemp@errN <- ifelse(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
-                        mytemp@getChimeraTable <- ifelse(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
-                        mytemp@getErrPDF <- ifelse(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
-                        mytemp@ignoreNegatives <- ifelse(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
-                        mytemp@justConcatenate <- ifelse(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
-                        mytemp@maxMismatch <- ifelse(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0)
-                        mytemp@maxShift <- ifelse(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
-                        mytemp@mergeSeqs <- ifelse(!is.null(options$mergePairs), options$mergePairs, FALSE)
-                        mytemp@minFoldParentOverAbundance <- ifelse(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5)
-                        mytemp@minOverlap <- ifelse(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12)
-                        mytemp@minSampleFraction <- ifelse(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9)
-                        mytemp@returnRejects <- ifelse(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
-                        mytemp@trimOverhang <- ifelse(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
+                        mytemp@chimeraDetectionAllowOneOff <- `if`(!is.null(options$chimeraDetectionAllowOneOff), options$chimeraDetectionAllowOneOff, FALSE)
+                        mytemp@dadaBandSize <- `if`(!is.null(options$dadaBandSize), as.numeric(as.character(options$dadaBandSize)), 16)
+                        mytemp@dadaOmegaA <- `if`(!is.null(options$dadaOmegaA), as.numeric(as.character(options$dadaOmegaA)), 1e-40)
+                        mytemp@derepN <- `if`(!is.null(options$derepN), as.numeric(as.character(options$derepN)), 1e+06)
+                        mytemp@chimeraDetectionMinFoldParentOverabundance <- `if`(!is.null(options$chimeraDetectionParentAbundance), as.numeric(as.character(options$chimeraDetectionParentAbundance)), 2)
+                        mytemp@errN <- `if`(!is.null(options$errN), as.numeric(as.character(options$errN)), 1e+08)
+                        mytemp@createChimeraDetectionTable <- `if`(!is.null(options$createChimeraDetectionTable), options$createChimeraDetectionTable, FALSE)
+                        mytemp@saveErrorsPlotPDF <- `if`(!is.null(options$saveErrorsPlot), options$saveErrorsPlot, FALSE)
+                        mytemp@chimeraDetectionIgnoreNegatives <- `if`(!is.null(options$chimeraDetectionIgnoreNegatives), as.numeric(as.character(options$chimeraDetectionIgnoreNegatives)), 1)
+                        mytemp@mergeSeqPairsJustConcatenate <- `if`(!is.null(options$mergePairsJustConcatenate), options$mergePairsJustConcatenate, FALSE)
+                        mytemp@mergeSeqPairsMaxMismatch <- `if`(!is.null(options$mergePairsMaxMismatch), as.numeric(as.character(options$mergePairsMaxMismatch)), 0)
+                        mytemp@chimeraDetectionMaxShift <- `if`(!is.null(options$chimeraDetectionMaxShift), as.numeric(as.character(options$chimeraDetectionMaxShift)), 16)
+                        mytemp@doMergeSeqPairs <- `if`(!is.null(options$mergePairs), options$mergePairs, FALSE)
+                        mytemp@chimeraDetectionMinFoldParentOverabundance <- `if`(!is.null(options$chimeraDetectionMinFoldParentOverabundance), as.numeric(as.character(options$chimeraDetectionMinFoldParentOverabundance)), 1.5)
+                        mytemp@mergeSeqPairsMinOverlap <- `if`(!is.null(options$mergePairsMinOverlap), as.numeric(as.character(options$mergePairsMinOverlap)), 12)
+                        mytemp@chimeraDetectionMinSampleFraction <- `if`(!is.null(options$chimeraDetectionMinSampleFraction), as.numeric(as.character(options$chimeraDetectionMinSampleFraction)), 0.9)
+                        mytemp@mergeSeqPairsReturnRejects <- `if`(!is.null(options$mergePairsReturnRejects), options$mergePairsReturnRejects, FALSE)
+                        mytemp@mergeSeqPairsTrimOverhang <- `if`(!is.null(options$mergePairsTrimOverhang), options$mergePairsTrimOverhang, FALSE)
 
 		}
 		else {
@@ -289,9 +289,9 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 		mytemp <- setFastReport(inDir = options$pathToData,
 							outDir = options$outDir, 
 							fastqcPath = options$pathToFastqc, 
-							installFastqc = ifelse(!is.null(options$installFastqc), options$installFastqc, FALSE),
-							numThreads = ifelse(!is.null(options$fastqcThreads), as.numeric(as.character(options$fastqcThreads)), 4), 
-							description = ifelse(!is.null(options$fastqcExperimentDescription), options$fastqcExperimentDescription, "My Project"))
+							installFastqc = `if`(!is.null(options$installFastqc), options$installFastqc, FALSE),
+							numThreads = `if`(!is.null(options$fastqcThreads), as.numeric(as.character(options$fastqcThreads)), 4), 
+							description = `if`(!is.null(options$fastqcExperimentDescription), options$fastqcExperimentDescription, "My Project"))
 	}
 	else if (all("seqdump" == type)) {
 		mytemp <- setFastSeqDump(sampleURLs = options$pathToSampleURLs, 
@@ -307,8 +307,8 @@ readConfig <- function(configFile, isPaired = FALSE, type = c('auto')) {
 							adapterList = options$listOfAdapters)
 	}
 	else if (all("qualityplot" == type)) {
-		mytemp <- setfastPlotQuality(aggregate = ifelse(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
-							N = ifelse(!is.null(options$qualN), as.numeric(as.character(options$qualN)), 5e+05))
+		mytemp <- setfastPlotQuality(aggregate = `if`(!is.null(options$aggregateQual), options$aggregateQual, TRUE), 
+							N = `if`(!is.null(options$qualN), as.numeric(as.character(options$qualN)), 5e+05))
 	}
 	else { 
 		stop("Error reading config file. Invalid type supplied") # Catches any missed errors

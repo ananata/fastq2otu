@@ -1,3 +1,4 @@
+
 #' export
 getRowSums <- function(rds.path) {
   table <- readRDS(rds.path)

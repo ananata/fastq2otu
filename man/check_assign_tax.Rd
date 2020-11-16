@@ -7,7 +7,7 @@
 check_assign_tax(object)
 }
 \arguments{
-\item{object}{fastSeqDump-type S4 object}
+\item{object}{fastAssignTaxa-type S4 object}
 }
 \value{
 TRUE (boolean) or error message detailing source(s) of error.

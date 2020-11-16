@@ -7,6 +7,7 @@
 setFastAssignTaxa(
   refDatabase,
   prefix = "myproject",
+  validate = FALSE,
   minBootstrap = 50,
   tryComplement = FALSE,
   showBootstraps = FALSE,
@@ -19,6 +20,8 @@ setFastAssignTaxa(
 \item{refDatabase}{Required input. Path to fasta-formatted database containing reference sequences used during taxonomic assignment.}
 
 \item{prefix}{Default is "myproject". Project-specific label that will be included in the names of all files and directories created.}
+
+\item{validate}{Default is FALSE. When TRUE all validation methods are executed.}
 
 \item{minBootstrap}{Default is 50. Sets min-bootstrap value for DADA2 assignTaxonomy method.}
 

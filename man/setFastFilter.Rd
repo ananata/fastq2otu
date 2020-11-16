@@ -8,6 +8,7 @@ setFastFilter(
   inDir,
   outDir,
   prefix = "myproject",
+  validate = FALSE,
   maxEE = 2.5,
   truncQ = 0,
   truncLen = 0,
@@ -26,6 +27,8 @@ setFastFilter(
 \item{outDir}{Required input. Path to write output files.}
 
 \item{prefix}{Default is "myproject". Project-specific label that will be included in the names of all files and directories created.}
+
+\item{validate}{Default is FALSE. When TRUE all validation methods are executed.}
 
 \item{maxEE}{Default is 2.5. Sets maxEE parameter for DADA2's filterAndTrim method. Two numeric inputs are expected for paired-end data.}
 

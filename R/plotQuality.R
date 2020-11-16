@@ -5,16 +5,21 @@
 #' @param object fastPlotQuality object 
 #' @export
 plotQuality <- function(fp, label, object) {
+	FLAG <- FALSE
 	# Verify that inputs are valid
-	if (!dir.exists(fp) | length(list.files(path = fp, pattern = ".fastq")) == 0) {
-		stop(sprintf("'%s' does not exist or no FASTQ files could be detected in path", fp))
+        if (length(fp) == 1 & dir.exists(fp)) {
+                # Extracts all FASTQ from path
+                Fs <- sort(list.files(fp, pattern="*.fastq(.gz)?", full.names = TRUE))
+		if (length(Fs) < 1) {
+			stop("No FASTQ files could be detected in path")
+		}
+        }	
+	else if (length(fp) > 1) {
+		Fs <- fp
+		FLAG <- TRUE
+	}  else {
+		stop(sprintf("'%s' does not exist", fp))
 	}
-
-	# Extract all FASTQ files from path
-	Fs <- sort(list.files(fp, pattern="*.fastq", full.names = TRUE))
-
-	# Find current date
-	currDate <- gsub("-", "", Sys.Date())
 
 	## Plot aggregate graph
 	if (object@aggregateQual) {
@@ -22,6 +27,8 @@ plotQuality <- function(fp, label, object) {
 	} else {
 	  plotAgg <- lapply(Fs, plot_quality, n = object@qualN) # Returns a list of ggplots
 	}
+
+	label <- object@projectPrefix
 	if (!missing(label) & object@aggregateQual) {
 		## Change plot title
 		plotAgg <- plotAgg + ggplot2::ggtitle(paste0(label, " Aggregate Quality Plot"))
@@ -30,7 +37,11 @@ plotQuality <- function(fp, label, object) {
 	}
 
 	## Return plot (only one plot is generated per dataset)
-	save(plotAgg, file = "quality_distribution.RData")
+	if (FLAG) {
+		save(plotAgg, file = "quality_distribution_AFTER.RData")
+	} else {
+		save(plotAgg, file = "quality_distribution_BEFORE.RData")
+	}
 	return(plotAgg)
 
 }

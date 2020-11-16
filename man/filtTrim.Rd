@@ -4,10 +4,16 @@
 \alias{filtTrim}
 \title{Filter and trim single or paired-end data}
 \usage{
-filtTrim(object, sample.names)
+filtTrim(object, sample.names, forwardFs = NA, reverseRs = NA)
 }
 \arguments{
 \item{object}{S4 object of type class fastq2otu (i.e. fastq2otu_single, fastq2otu_paired)}
+
+\item{sample.names}{character vector containing sample ids}
+
+\item{forwardFs}{character vecter containing paths to forward/single reads}
+
+\item{reverseRs}{character vector containing paths to reverse reads}
 }
 \description{
 Filter and trim single or paired-end data

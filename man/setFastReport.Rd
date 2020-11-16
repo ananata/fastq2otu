@@ -8,6 +8,7 @@ Users have the option of creating a detailed report of their data using FASTQC}
 setFastReport(
   inDir,
   outDir,
+  validate = FALSE,
   fastqcPath = NA_character_,
   installFastqc = FALSE,
   numThreads = 4,
@@ -18,6 +19,8 @@ setFastReport(
 \item{inDir}{Required input. Path to directory containing FASTQ files.}
 
 \item{outDir}{Required input. Path to write output files.}
+
+\item{validate}{Default is FALSE. When TRUE, all validation functions are executed.}
 
 \item{adapterList}{Required input. List of adapter sequences to remove from files.
 

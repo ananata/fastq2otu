@@ -3,14 +3,15 @@
 #' @param seqtabs List of path(s) to frequency tables
 #' @param final.print Name of file to save. 
 #' @return Merged table that can be used to complete cross sample comparisons
+#' @importFrom gtools mixedsort
 #' @export
-mergeSamples <- function(otutabs, seqtabs, final.print = "final_merged_table.csv") {
+mergeSamples <- function(otutabs, seqtabs, label) {
   # Load required libraries
   # Verify that sequence tables correspond to OTU tables
   otuLabels <- as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.csv'), '[', 1))
   seqLabels <- as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1))
 
-  if (mixedsort(otuLabels) != mixedsort(seqLabels)) {
+  if (gtools::mixedsort(otuLabels) != gtools::mixedsort(seqLabels)) {
     stop("IDs must match")
   }
 
@@ -52,7 +53,7 @@ mergeSamples <- function(otutabs, seqtabs, final.print = "final_merged_table.csv
 
   # Check that both tests (s1 and s2) yielded 'TRUE'
   if (!all(s1, s2)) {
-    return("You can not merge across")
+    return(FALSE)
   }
 
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
@@ -60,6 +61,7 @@ mergeSamples <- function(otutabs, seqtabs, final.print = "final_merged_table.csv
   final.tab <- cbind(final.tab, mergedSeqs[match(mergedOTU$Sequences, mergedSeqs$Sequences), 2:ncol(mergedSeqs)])
 
   # Write the table to file
+  final.print <- paste0(label, "_final_merged_table.txt")
   write.table(final.tab, file = final.print, sep = "\t")
 
   # Return table

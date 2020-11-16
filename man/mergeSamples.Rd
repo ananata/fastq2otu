@@ -4,7 +4,7 @@
 \alias{mergeSamples}
 \title{Merge OTU tables from different samples}
 \usage{
-mergeSamples(otutabs, seqtabs, final.print = "final_merged_table.csv")
+mergeSamples(otutabs, seqtabs, label)
 }
 \arguments{
 \item{otutabs}{List of path(s) to OTU tables}

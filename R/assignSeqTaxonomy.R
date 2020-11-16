@@ -3,12 +3,13 @@
 #'
 #' @param seqtab Sequence frequency table
 #' @param object S4 object of type fastq2otu (i.e. fastPaired, fastSingle)
+#' @importFrom dada2 assignTaxonomy
 #' @return OTU table
 #' @export 
 assignSeqTaxonomy <- function(seqtab, object) {
   # Load required libraries
   # Extract required parameters
-  reference <- object@taxDatabase
+  referenceDatabase <- object@taxDatabase
   minBootstrap <- object@assignTaxMinBootstrap
   tryComplement <- object@assignTaxTryComplement
   showBootstraps <- object@assignTaxOutputBootstraps
@@ -17,7 +18,7 @@ assignSeqTaxonomy <- function(seqtab, object) {
   verbose <- object@assignTaxVerbose
 
   # Execute assignTaxonomy()
-  otu.tab <- dada2::assignTaxonomy(as.matrix(seqtab), reference, minBoot = minBootstrap,
+  otu.tab <- dada2::assignTaxonomy(as.matrix(seqtab), referenceDatabase, minBoot = minBootstrap,
                        tryRC = tryComplement, outputBootstraps = showBootstraps,
                        taxLevels = taxLevels, multithread = multithread,
                        verbose = verbose)

@@ -7,6 +7,8 @@
 setFastPaired(
   inDir,
   outDir,
+  validate = TRUE,
+  pattern = ".*_[1,2].fastq(.gz)?",
   mergeSeqs = TRUE,
   trimOverhang = FALSE,
   minOverlap = 12,
@@ -38,6 +40,10 @@ setFastPaired(
 \item{inDir}{Required input. Path to FASTQ files.}
 
 \item{outDir}{Required input. Path to write output files.}
+
+\item{validate}{Default is TRUE. Execute all validation methods.}
+
+\item{pattern}{Regex pattern used to select fastq files from directory.}
 
 \item{mergeSeqs}{Required input. Default is TRUE to merge forward and reverse amplicons. FALSE prevents DADA2's mergePairs method from being executed.}
 

@@ -6,10 +6,12 @@
 Parses list of SRA accession numbers and uses fastq-dump to download FASTQ files directly from NCBI.
 Downloaded files are gziped by default.}
 \usage{
-getSeqs(object)
+getSeqs(object, useFastqDump = FALSE)
 }
 \arguments{
 \item{object}{S4 object of type fastq2otu (i.e. fastq2otu_paired or fastq2otu_single)}
+
+\item{useFastqDump}{Default is FALSE. If TRUE, fastqdump is used to download sequence files.}
 }
 \value{
 path to directory

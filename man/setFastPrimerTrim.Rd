@@ -5,15 +5,42 @@
 \title{Create a fastPrimerTrim object
 Users have the option of trimming adapters from their data using bbduk.sh}
 \usage{
-setFastPrimerTrim(inDir, outDir, adapterList)
+setFastPrimerTrim(
+  inDir,
+  outDir,
+  adapterList,
+  paired = FALSE,
+  validate = FALSE,
+  maxMismatch = 2,
+  allowIndels = FALSE,
+  trimF = FALSE,
+  trimR = FALSE,
+  orient = FALSE,
+  compress = FALSE
+)
 }
 \arguments{
 \item{inDir}{Required input. Path to directory containing FASTQ files.}
 
 \item{outDir}{Required input. Path to write output files.}
 
-\item{adapterList}{Required input. List of adapter sequences to remove from files.
+\item{adapterList}{Required input. List of adapter sequences to remove from files.}
 
+\item{paired}{Default is FALSE. When TRUE, two adapter sequences will be expected in file listed in "listOfAdapters"}
+
+\item{validate}{Default is FALSE. When TRUE, all validation method are executed.}
+
+\item{maxMismatch}{Default is 2. Sets the number of bases to mismatch when aligning forward / reverse adapters to sequences.}
+
+\item{allowIndels}{Default is false. Allows gaps / insertions when aligning forward / reverse adapters to sequences.}
+
+\item{trimF}{Default is FALSE. Trim forward reads.}
+
+\item{trimR}{Default is FALSE. Trim reverse reads.}
+
+\item{orient}{Default is FALSE. Orient forward and reverse reads into the same direction}
+
+\item{compress}{Default is FALSE. When TRUE, all output files are gzipped.
 TODO: Add Example}
 }
 \description{
