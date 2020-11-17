@@ -13,15 +13,13 @@ FASTQ2OTU's workflow can be broken down into multiple stages:
 7. Assign Taxonomy
 8. Merge OTU Tables - Merges individual OTU tables to create a single table that can used in downstream analyses. 
 
-#### Advantages of using FASTQ2OTU
+## Advantages of using FASTQ2OTU
 * Documentation is automated (all inputs and outputs are recorded)
 * Integrated workflow
 * Outputs are automatically generated
 * Easy to use
 
-## Quick Start Guide
-
-#### Directory Overview
+## Directory Overview
 ```
 fastq2otu:.
 |   DESCRIPTION
@@ -29,48 +27,101 @@ fastq2otu:.
 |   NAMESPACE
 |   README.md
 |
-+---data
-+---exec
-|       bbduk.sh
-|       fastq-dump
-|       retrieve_sra_sequences.sh
-|       use_bbduk.sh
-|
 +---inst
-|       bbduk_LISCENSE
-|       example-config.yml
-|       fastq-dump_LISCENSE
+|   +---bash
+|   |       reformat_fastq.sh
+|   |       retrieve_sra_sequences.sh
+|   |       use_bbduk.sh
+|   |
+|   \---examples
+|       |   
+|       |
+|       +---paired
+|       |       paired-example_config.yml
+|       |       paired-example_SRR_Acc_List.txt
+|       |       paired-example_SRR_Url_List.txt     
+|       |
+|       \---single
+|               single-example_config.yml
+|               single-example_SRR_ACC_List.txt
 |
-\---R
-        assignSeqTaxonomy.R
-        dadaSeqs.R
-        filtTrim.R
-        getRowSums.R
-        getSeqs.R
-        learnSeqErrors.R
-        makeSeqsTable.R
-        mergeSamples.R
-        mergeSeqPairs.R
-        plotQuality.R
-        readConfig.R
-        removeChimeras.R
-        removePrimers.R
-        runFastqc.R
-        saveSeqs.R
-        saveTaxonomyTables.R
-        setup.R
++---man
+|       assignSeqTaxonomy.Rd
+|       check_assign_tax.Rd
+|       check_fastPaired.Rd
+|       check_fastq2otu.Rd
+|       check_fastSingle.Rd
+|       check_filt_params.Rd
+|       check_primer_trim.Rd
+|       check_seq_dump.Rd
+|       dadaSeqs.Rd
+|       fastAssignTaxa-class.Rd
+|       fastFilter-class.Rd
+|       fastPaired-class.Rd
+|       fastPlotQuality-class.Rd
+|       fastPrimerTrim-class.Rd
+|       fastq2otu-class.Rd
+|       fastReport-class.Rd
+|       fastSeqDump-class.Rd
+|       fastSingle-class.Rd
+|       filtTrim.Rd
+|       getRowSums.Rd
+|       getSeqs.Rd
+|       makeSeqsTable.Rd
+|       mergeSamples.Rd
+|       plot_quality.Rd
+|       readConfig.Rd
+|       removeChimeras.Rd
+|       runFastqc.Rd
+|       runPipeline.Rd
+|       saveSeqs.Rd
+|       saveTaxonomyTables.Rd
+|       setFastAssignTaxa.Rd
+|       setFastFilter.Rd
+|       setFastPaired.Rd
+|       setfastPlotQuality.Rd
+|       setFastPrimerTrim.Rd
+|       setFastReport.Rd
+|       setFastSeqDump.Rd
+|       setFastSingle.Rd
+|       trimAdapters.Rd
+|
++---R
+|       assignSeqTaxonomy.R
+|       filtTrim.R
+|       getRowSums.R
+|       getSeqs.R
+|       mergeSamples.R
+|       mergeSeqPairs.R
+|       plotQuality.R
+|       readConfig.R
+|       removeChimeras.R
+|       runFastqc.R
+|       runPipeline.R
+|       saveSeqs.R
+|       saveTaxonomyTables.R
+|       setup.R
+|       trimAdapters.R
+|
+\---tests
+    \---testthat
+            test-assignSeqTaxonomy.R
+            test-dadaSeqs.R
+            test-filtTrim.R
+            test-getRowSums.R
+            test-getSeqs.R
+            test-mergeSamples.R
+            test-mergeSeqPairs.R
+            test-plotQuality.R
+            test-readConfig.R
+            test-removeChimeras.R
+            test-runFastqc.R
+            test-runPipeline.R
+            test-saveSeqs.R
+            test-saveTaxonomyTables.R
+            testthat.R
 ```
 For navigation purposes, the above diagram has been provided as a general schematic of all the files and sub-directories located within the FASTQ2OTU package. 
-
-#### Demo Files
-```
-# Load package into environoment
-library("ananata/fastq2otu")
-
-// Run demo
-runDemo()
-```
-The `runDemo()` function will execute the entire pipeline on a set of a sample data. The example datasets (including config file) can be viewed in the `inst/` directory (TODO), and output files will be written to the user's current working directory. 
 
 ## Getting Started
 After installing FASTQ2OTU, the following input files and/or directories will be required to begin processing data:
@@ -82,11 +133,56 @@ After installing FASTQ2OTU, the following input files and/or directories will be
     - If merging, the desired overlap length
     - Working knowledge of [DADA2 workflow](https://benjjneb.github.io/dada2/tutorial.html)
 
-### Prerequisites and Dependencies
+## Execute pipeline
+```
+# Load package into environoment
+library("ananata/fastq2otu")
 
+# Path to config file
+paired_config <- "path/to/my_paired-example_config.yml"
 
-### Installation
+# Run pipeline
+runPipeline(configFile = paired_config, isPaired = TRUE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = TRUE, getGeneratedReport = FALSE)
+```
+The `runPipeline()` function will allow the the entire DADA2 pipeline to be run. The parameters in the function allows users to specify which steps of the pipeline they would like to execute. The following table provides a description of each parameter and the action(s) it controls.  
 
+| Parameter       | Description | Directions |
+| --------------- |-------------|------------|
+|configFile | Path to YML-file containing all user inputs | The file must be formatted with the correct variable names (please refer to template)|
+|isPaired | TRUE if handling paired-end data and FALSE if handling single-end. | Please note that paired-end and single-end data must be processed seperately (the package cannot analyze both datatypes simultaneously). |
+| getQuality | TRUE if you would like to generate a quality distribution plot and FALSE if you would like to skip the step. | This step can be run independently. |
+| getMergedSamples | TRUE if you would like to generate a merged sample table and FALSE if you would like to skip the step. | Generates a single table containing data from all samples. |
+| getDownloadedSeqs | TRUE if you would like to use `fastq-dump` or `wget` to download data directly from NCBI's SRA database. | Requires a text file containing all SRA sample IDs or FTP download links |
+| getGeneratedReport | If TRUE, a FASTQC report is generate using the FASTQCR R-package | This step can also be run independently. |
+
+### Quick Start Guide
+DADA2 is an R package that allows users to preform high-resolution taxanomy analyses from FASTQ files. This package will allow most users to analyse datasets using the DADA2 pipeline. This procedure will cover some basics of R programming, installing and running the package on R server, and interpreting some of the outputs generated.
+There are two objectives for this document:
+1. Introduce new users to DADA2’s functions;
+2. To set-up a pipeline for 16S rRNA analyses of target bacterial isolates.
+
+### Plot Quality Distribution
+DADA2’s `plotQualityProfile()` function creates a plot(s) that visualizes the overall distribution of quality scores within a dataset. Users can use the plots to make informed decisions about how they would like their data to be processed (i.e. filtering and trimming). The generated quality graphs show colored lines that signify different statistics. 
+* Green is the mean quality score for all reads in a single dataset 
+* Orange is the median 
+* Dashed orange lines demarcate the 25th and 75th quantiles.
+
+### Merging Samples
+Sequence tables generated by DADA2’s `makeSequenceTable()` function are formatted as single-row matrices (contain only one row), with consensus sequences as column headings and read counts as elements in the row. OTU Tables (given by DADA2's `assignTaxonomy()` or `assignSpecies()` function) contain taxonomic assignments and sequence variants (ASV). FASTQ2OTU's `mergeSamples` function will merge data from sequence and OTU tables obtained from different samples to generate a single table. The final table can be used to make inter-sample comparisons that may inform downstream analyses.
+
+#### Downloading Data from NCBI
+Public data can be accessed from NCBI’s [SRA website](https://www.ncbi.nlm.nih.gov/sra) . To view datasets, enter a project ID (i.e. PRJEB8073), click "Search" and select “Send results to Run Selector" link to view the results interactively. To access the Run Selector tool directly, the following [link](https://trace.ncbi.nlm.nih.gov/Traces/study/?go=home) can also be used. To obtain a list of all SRA accession IDs within a given project, click the "Accession List" button in middle the "Select" panel and wait for the text file to be downloaded.
+
+##### Using FASTQ-DUMP
+To download datasets using NCBI's fastq-dump utility, download the [sra-toolkit](https://www.ncbi.nlm.nih.gov/sra/docs/sradownload/) from NCBI and obtain the path to the `fastq-dump` tool. Record the paths to the `fastq-dump` script the SRA accession list in the config file (described below). Make sure to set the `getDownloadedSeqs` parameter to TRUE, when executing the `runPipeline()` function. 
+
+##### Using WGET
+To download datasets from SRA using `wget`, navigate to [SRA-Explorer](https://sra-explorer.info/) and input your project ID. Once you click the search icon, a table should appear at the bottom of the window. Select all rows in the tables and store the results by clicking the blue "Add to Collection" button on the right. Please not that the search only outputs a certain number of results each time (with the max being 500). In order to obtain data on more than 500 samples, you must update the "Start at Record" text box after each search. Once you have stored all your samples in your collection, click the shopping cart icon on the top right. Click the tab that says "Raw FastQ Download URLs" and select the download link. Record the path to the downloaded text file in the config file and make sure to set the `getDownloadedSeqs` parameter to TRUE, when executing the `runPipeline()` function. 
+
+#### Generating FASTQCR Report
+When `getGeneratedReport` is TRUE, [FASTQCR](https://cran.r-project.org/web/packages/fastqcr/readme/README.html) is used to generate a FASTQCR report that provided quality  information about all input data. 
+
+## Installation
 This application is designed to be lightweight and simple to use. The intended use is via a remote server, however it can also be run using RStudio (the package was written in R 3.5.3) and can be downloaded from Github using [devtools](https://github.com/r-lib/devtools). 
 
 ```
@@ -102,27 +198,24 @@ library("ananata/fastq2otu")
 
 ### Using a config file
 
-| Variable        | Type           | Default  | Description |
-| --------------- |--------------|--------|-------------|
-|taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
-|isPaired|Logical| FALSE | Required. Determine whether input sequences are single (FALSE) or paired-end (TRUE) |
-|pathToData|Character| N/A | Required. Path to directory containing input FASTQ files. For paired-end data, files containing forward or reverse reads must be in the same directory path. | 
-|projectPrefix|Character|myproject| Unique identifier to label output files generated from workflow.|
-|outDir|Character|Current working directory|Path to output directory that the contain all output files and documents. |
-|runFastqDump|Logical|FALSE|Determines whether fastq-dump should be executed. |
-|pathToSampleIDs|Character|N/A|Required if runFastqDump is TRUE. Path to a list of SRA Accession ids to be downloaded using [fastq-dump](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=fastq-dump).|
-|trimPrimers|Logical|FALSE|Determines whether bbduk.sh should be executed to trim all adapters present on input FASTQ files |
-|listOfAdapters|Character|N/A|Required if trimPrimers is TRUE. Path to a list of adapter sequence to be removed using [bbduk.sh](https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/)|
-|pathToBBDuk|Character|N/A|Path to bbduk.sh script (should be kept in BBTools root directory. Refer to BBTools [0documentation] (https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/) for more information.)|
-|pathToRawFastq|Character|N/A|Required if trimPrimers is TRUE. Path to directory containing untrimmed sequences. |
+| Variable        | Type         | Default  | Description |
+| --------------- |--------------|----------|-------------|
 |projectPrefix |Character|"myproject"| Prefix to append to newly created files (i.e. <myproject>_filtered_files/ is created to store filtered files)|
-|outDir |Character|N/A| Path to directory that will store all output data. |
+|outDir|Character|Current working directory|Path to output directory that the contain all output files and documents.|
 |pathToData |Character|N/A|Path to directory storing all input data.|
-|isPaired |Logical|FALSE|Boolean statement that if data being handled is paired-end (TRUE) or single (FALSE).| 
+|verbose | Logical| FALSE | Sets `verbose` parameter for all functions |
+|multithread | Logical| FALSE | Sets the `multithread` parameter for all functions |
+|pathToSampleIDs|Character|N/A|The path to a text file containing SRA Accession IDs.|
+|fastaPattern | Character| ^.*[1,2]?.fastq(.gz)?$ | Regex pattern to use when parsing directories for FASTQ files. |
 |aggregateQual |Logical|N/A|Provide TRUE if you would like to aggregate your quality profile diagram. |
 |qualN||Numeric|0|Enter the number of bases to sample to learn seqence error rates.|
-|runFastqDump|Logical|FALSE|Provide TRUE if you would like to download sequences using a locally installed version of SRA's FASTQDUMP|
-|pathToSampleIDs|Character|N/A|Provide the path to a text file containing SRA IDs. |
+|useFastqDump|Logical|FALSE|Provide TRUE if you would like to download sequences using a locally installed version of SRA's FASTQDUMP|
+|pathToFastqDump|Character|N/A| Path to fastq-dump script. Required if useFastqDump parameter is TRUE. |
+|pathToSampleURLs|Character|N/A| Path to text file containing FTP download links. |
+|pathToFastqc|Character|N/A| Path to fastqc software. Required to use FASTQCR|
+|installFastqc|Logical|FALSE|If TRUE, FASTQC will be automatically downloaded into the users home directory. Unless an input for pathToFastqc is provided, then the new download will overwrite the older version. |
+|pathToFastqcResults|Character|Path to the directory storing the FASTQC reports. |
+|taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
 
 ## Authors
 
