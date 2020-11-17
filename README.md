@@ -214,8 +214,10 @@ library("ananata/fastq2otu")
 |pathToSampleURLs|Character|N/A| Path to text file containing FTP download links. |
 |pathToFastqc|Character|N/A| Path to fastqc software. Required to use FASTQCR|
 |installFastqc|Logical|FALSE|If TRUE, FASTQC will be automatically downloaded into the users home directory. Unless an input for pathToFastqc is provided, then the new download will overwrite the older version. |
-|pathToFastqcResults|Character|Path to the directory storing the FASTQC reports. |
+|pathToFastqcResults|Character| N/A | Path to the directory storing the FASTQC reports. |
 |taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
+
+Please refer to template config file for a more comprehensive list of the available parameters. 
 
 ## Authors
 
