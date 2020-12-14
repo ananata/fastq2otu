@@ -5,33 +5,30 @@
 #' @param sample.names List of file ids
 #' @return Path(s) to saved OTU tables
 #' @export
-saveTaxonomyTables <- function(tables, sample.names, output.dir, label) {
-  # Initialize list
-  pathsToOTUs <- vector("character", length = length(tables))
+saveTaxonomyTables <- function(table, sample.name, output.dir, index, label) {
+  if (!dir.exists(output.dir)) {
+	stop("Invalid path provided for output.dir")
+  }
 
   # Create a directory for OTU Tables if they do not already exist
   if (!dir.exists(file.path(output.dir, paste0(label, "_taxonomy_tables")))) {
     dir.create(file.path(output.dir, paste0(label, "_taxonomy_tables")))
   }
 
-  # Save OTU tables
-  for (i in 1:length(sample.names)) {
-     # Reorder columns
-     Sequences <- rownames(tables[i])
-     new.table <- cbind(tables[i], Sequences)
-     rownames(new.table) <- NULL
+   # Reorder columns
+   Sequences <- rownames(table)
+   new.table <- cbind(table, Sequences)
+   rownames(new.table) <- NULL
 
-     # Set .csv file name
-     f.print <- file.path(output.dir, paste0(label, "_taxonomy_tables"), paste0(i, "_", sample.names[i], "_OTU_Table.csv"))
+   # Set .csv file name
+   f.print <- file.path(output.dir, paste0(label, "_taxonomy_tables"), paste0(index, "_", sample.name, "_OTU_Table.csv"))
+   rds.print <- file.path(output.dir, paste0(label, "_taxonomy_tables"), paste0(index, "_", sample.name, "_OTU_Table.rds"))
 
-     # Add path to list
-     pathsToOTUs[i] <- f.print
+   # Save file
+   write.table(new.table, file = f.print, sep = "\t")
+   saveRDS(new.table, file = rds.print)
 
-     # Save file
-     write.table(new.table, file = f.print, sep = "\t")
-  }
-
-  # Return paths
-  return(pathsToOTUs)
+   # Return paths
+   return(rds.print)
 }
 

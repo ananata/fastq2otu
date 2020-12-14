@@ -4,39 +4,41 @@
 #' @param final.print Name of file to save. 
 #' @return Merged table that can be used to complete cross sample comparisons
 #' @importFrom gtools mixedsort
+#' @importFrom dada2 mergeSequenceTables
 #' @export
-mergeSamples <- function(otutabs, seqtabs, label) {
-  # Load required libraries
+mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Verify that sequence tables correspond to OTU tables
-  otuLabels <- as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.csv'), '[', 1))
-  seqLabels <- as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1))
+  otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.rds'), '[', 1)))
+  seqLabels <- na.omit(as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1)))
 
   if (gtools::mixedsort(otuLabels) != gtools::mixedsort(seqLabels)) {
     stop("IDs must match")
   }
 
   # Read sequence tables into R
-  seqtab.list <- lapply(gtools::mixedsort(seqtabs), readRDS)
+  clean.seqtabs <- gtools::mixedsort(seqtabs[seqtabs != ""])
+  seqtab.list <- lapply(clean.seqtabs, readRDS)
 
   # Merge seqtab.list (produces WIDE matrix)
   mergedSeqs <- dada2::mergeSequenceTables(tables = seqtab.list)
-
+ 
   # Transpose
   mergedSeqs <- t(mergedSeqs)
   Sequences <- rownames(mergedSeqs)
   mergedSeqs <- cbind(Sequences, mergedSeqs)
   rownames(mergedSeqs) <- NULL
 
+  
   # Read OTU tables into R
-  otutab.list <- lapply(gtools::mixedsort(otutabs), read.table)
+  clean.otutabs <- gtools::mixedsort(otutabs[otutabs != ""])
+  otutab.list <- lapply(clean.otutabs, readRDS)
 
-  # Merge otutab.list (warnings are fixed in next step)
-  byCols <- c(options$assignTaxLevels, "Sequences")
-  mergedOTU <- Reduce(function(x, y) (merge(x, y, by = byCols, all = TRUE)), otutab.list,
-                accumulate = FALSE) # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...)
+  # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
+  mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list) # Fully merge all tables (i.e. # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...))
+  byCols <- colnames(mergedOTU)
 
   # Warnings: Duplicated column names - fixed here
-  names(mergedOTU)[-c(1:length(byCols))] <- as.vector(sapply(strsplit(basename(otuLabels), "_"), '[', 2))
+  names(mergedOTU)[-c(1:length(taxLevels))] <- as.vector(sapply(strsplit(basename(otuLabels), "_"), '[', 2))
 
   # Reorder rows in mergedOTU to correspond to row order in mergedSeqs
   mergedSeqs <- as.data.frame(mergedSeqs)
@@ -65,6 +67,6 @@ mergeSamples <- function(otutabs, seqtabs, label) {
   write.table(final.tab, file = final.print, sep = "\t")
 
   # Return table
-  return(final.tab)
+  return(final.print)
 }
 

@@ -4,7 +4,7 @@
 \alias{saveTaxonomyTables}
 \title{Save OTU Tables}
 \usage{
-saveTaxonomyTables(tables, sample.names, output.dir)
+saveTaxonomyTables(table, sample.name, output.dir, index, label)
 }
 \arguments{
 \item{tables}{List of  OTU tables}

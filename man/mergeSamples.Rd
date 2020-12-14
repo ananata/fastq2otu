@@ -4,7 +4,7 @@
 \alias{mergeSamples}
 \title{Merge OTU tables from different samples}
 \usage{
-mergeSamples(otutabs, seqtabs, label)
+mergeSamples(otutabs, seqtabs, label, taxLevels)
 }
 \arguments{
 \item{otutabs}{List of path(s) to OTU tables}

@@ -14,23 +14,9 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 		# Create output file names for filtered sequences
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_R1_filt_trimmed.fastq.gz"))
 		filtRs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_R2_filt_trimmed.fastq.gz"))
-
-		# Check to see if files exist
-		if (all(file.exists(filtFs)) & all(file.exists(filtRs))) {
-			return(c(filtFs, filtRs))
-		} else {
-			fnotExist <- filtFs[!file.exists(filtFs)]
-			rnotExist <- filtRs[!file.exists(filtRs)]
-			fFs <- forwardFs[!file.exists(filtFs)]
-			rRs <- reverseRs[!file.exists(filtRs)]
-			
-			if (length(fnotExist) != length(rnotExist)) {
-				stop("Unsorted filtered files.")
-			}
-		}
 		
 		# Filter and Trim (only executes paths that do not already exist)
-		filt_trim <- dada2::filterAndTrim(fwd=fFs, filt=fnotExist, rev=rRs, filt.rev=rnotExist, maxEE=as.vector(object@filtMaxEE), trimLeft=as.vector(object@filtTrimLeft),
+		filt_trim <- dada2::filterAndTrim(fwd=forwardFs, filt=filtFs, rev=reverseRs, filt.rev=filtRs, maxEE=as.vector(object@filtMaxEE), trimLeft=as.vector(object@filtTrimLeft),
 								trimRight=as.vector(object@filtTrimRight), truncLen=as.vector(object@filtTruncLen), multithread=object@filtMultiThread,
 								verbose=object@filtVerbose, minLen=as.vector(object@filtMinLen), matchIDs=object@filtMatchIDs, truncQ=as.vector(object@filtTruncQ),
 								compress=TRUE)
@@ -50,15 +36,8 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 		# Create output file names for filtered sequences
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_filt_trimmed.fastq"))
 
-		# Check to see if output files already exist
-		if (all(file.exists(filtFs))) {
-			return(filtFs)
-		} else {
-			notExist <- subset(filtFs, !file.exists(filtFs))
-		}
-
 		# Filter and Trim (only executes filtered paths that do not already exist)
-		filtTrim <- dada2::filterAndTrim(Fs, notExist, maxEE=object@filtMaxEE, trimLeft=object@filtTrimLeft,
+		filtTrim <- dada2::filterAndTrim(Fs, filtFs, maxEE=object@filtMaxEE, trimLeft=object@filtTrimLeft,
 								trimRight=object@filtTrimRight, truncLen=object@filtTruncLen, multithread=object@filtMultiThread,
 								verbose=object@filtVerbose, minLen=object@filtMinLen, matchIDs=object@filtMatchIDs, truncQ=object@filtTruncQ)
 		

@@ -27,7 +27,7 @@ removeChimeras <- function(seqtab, object) {
                    multithread=as.logical(multithread), verbose=as.logical(verbose))
 
     # Return table with chimeric sequences labeled
-    return(seqtab.chim)
+    return(na.omit(seqtab.chim))
 
   } else {
     # Extract reqired parameters

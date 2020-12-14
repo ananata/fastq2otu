@@ -4,16 +4,16 @@
 \alias{saveSeqs}
 \title{Save sequence frequency tables in RDS file}
 \usage{
-saveSeqs(tables, sample.names, output.dir, add.table = FALSE)
+saveSeqs(table, sample.name, index, output.dir, add.table = FALSE, label)
 }
 \arguments{
-\item{tables}{List of sequence frequency tables}
+\item{output.dir}{Output directory to write RDS file}
 
-\item{sample.names}{List of SRA/fastq file ids (extracted directly from files)}
+\item{add.table}{Generates an additional table storing all chimeric sequences flagged by DADA2's}
 
-\item{output.dir}{Output directory to write RDS files}
+\item{tables}{Sequence frequency table.}
 
-\item{add.table}{Generates a table storing all chimeric sequences flagged by DADA2's}
+\item{sample.names}{SRA/fastq file ids (extracted directly from file)}
 }
 \description{
 Save sequence frequency tables in RDS file

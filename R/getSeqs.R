@@ -8,15 +8,14 @@
 #' @export
 getSeqs <- function(object, useFastqDump = FALSE) {
   # Get bash script
-  # retrieveSRAData <- system.file("bash", "retrieve_sra_sequences.sh", package = "fastq2otu") -- Use after package is installed
-  retrieveSRAData <- "/gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/inst/bash/retrieve_sra_sequences.sh"
+  retrieveSRAData <- system.file("bash", "retrieve_sra_sequences.sh", package = "fastq2otu")
 
   if (useFastqDump) {
     # Extract required inputs
     # Get path to fastq-dump executable script
     # Check for objects returning NA/NULL or empty strings
     first_check <- ifelse(is.na(object@pathToFastqDump) | object@pathToFastqDump == "", TRUE, FALSE)
-    if (first_check) { stop("Invalid path supplied for pathToFastqDump. Please check config file") }
+    if (first_check) { stop("Path Not Found Error: Invalid path supplied for pathToFastqDump. Please check config file") }
 
     if (!is.null(object@pathToFastqDump) & file.exists(object@pathToFastqDump)) {
       fDumpScript <- object@pathToFastqDump
@@ -27,7 +26,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     # Get path to output directory
     # Check for objects returning NA/NULL or empty strings
     second_check <- ifelse(is.na(object@outDir) | object@outDir == "", TRUE, FALSE)
-    if (second_check) { stop("Invalid path supplied for pathToData: ", object@outDir, ". Please check config file") }
+    if (second_check) { stop("Path Not Found Error: Invalid path supplied for pathToData: ", object@outDir, ". Please check config file") }
     
     # Get path to sample IDs
     # Check for objects returning NA/NULL or empty strings
@@ -36,7 +35,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
       sraList <- object@pathToSampleIDs
       output <- object@outDir # Writes to input directory (validated when object was created)
     } else {
-      stop(paste0("Invalid input for pathToSampleIDs. ", object@pathToSampleIDs, " could not be found."))
+      stop(paste0("Path Not Found Error: Invalid input for pathToSampleIDs. ", object@pathToSampleIDs, " could not be found."))
     }
     
     # Set system command - Example: ./retrieve_sra_sequences.sh ~/.sra-toolkit/bin/fastq-dump ../inst/examples/paired/paired-example_SRR_Acc_List.txt ./
