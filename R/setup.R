@@ -22,7 +22,7 @@
 #'
 #' @param object fastq2otu-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_fastq2otu <- function(object) {
   if (object@checkValidity) {
@@ -47,7 +47,7 @@ check_fastq2otu <- function(object) {
 #'
 #' @param object fastPaired-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_fastSingle <- function(object) {
   if (object@checkValidity) {
@@ -76,7 +76,7 @@ check_fastSingle <- function(object) {
 #'
 #' @param object fastPaired-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_fastPaired <- function(object) {
   if (object@checkValidity) {
@@ -105,7 +105,7 @@ check_fastPaired <- function(object) {
 #'
 #' @param object fastPrimerTrim-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_primer_trim <- function(object) {
 	errors <- character()
@@ -140,7 +140,7 @@ check_primer_trim <- function(object) {
 #'
 #' @param object fastFilt-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_filt_params <- function(object) {
 	errors <- character()
@@ -206,7 +206,7 @@ check_filt_params <- function(object) {
 #'
 #' @param object fastSeqDump-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_seq_dump <- function(object) {
 	errors <- character()
@@ -241,7 +241,7 @@ check_seq_dump <- function(object) {
 #'
 #' @param object fastAssignTaxa-type S4 object
 #' @return TRUE (boolean) or error message detailing source(s) of error.
-#' @keyword internal
+
 #' @export
 check_assign_tax <- function(object) {
 	errors <- c()
@@ -263,7 +263,7 @@ check_assign_tax <- function(object) {
 #'
 #' Use to convert parameters provided by user to accessible attributes associated with
 #' an S4-type data class.
-#' @keyword internal
+
 #' @export
 setClass("fastq2otu",
           slots = c(
@@ -341,7 +341,7 @@ setClass("fastq2otu",
 # Can extend and create with new("fastSingle", ...)
 #' Inherits methods and attributes from fastq2otu class
 #' Lists paramaters that are essential for analysing single-end data
-#' @keyword internal
+
 #' @export
 setClass("fastSingle",
 			slots = c(
@@ -359,7 +359,7 @@ setClass("fastSingle",
 # Can extend and create with new("fastPaired", ...)
 #' Inherits methods and attributes from fastq2otu class
 #' Lists paramaters that are essential for analysing paired-end data
-#' @keyword internal
+
 #' @export
 setClass("fastPaired",
 			slots = c(
@@ -398,7 +398,7 @@ setClass("fastPaired",
 #' trimming functions (trimLeft, trimRight) are validated by check_filt_params function. 
 #' 
 #' Sub-class of fastSingle and fastPaired S4 datatypes.
-#' @keyword internal
+
 #' @export
 setClass("fastFilter", 
 			slots = c(
@@ -432,7 +432,7 @@ setClass("fastFilter",
 #' Use to set parameters for DADA2 assignTaxonomy function. 
 #' 
 #' Sub-class of fastq2otu S4 datatype.
-#' @keyword internal
+
 #' @export
 setClass("fastAssignTaxa", 
 			slots = c(
@@ -462,7 +462,7 @@ setClass("fastAssignTaxa",
 #' Use to set parameters for DADA2's plotQualityProfile function.
 #' 
 #' Sub-class of fastq2otu S4 datatype.
-#' @keyword internal
+
 #' @export
 setClass("fastPlotQuality", 
 			slots = c(
@@ -481,7 +481,7 @@ setClass("fastPlotQuality",
 #' Use to set parameters for retrieving FASTQ files from NCBI's SRA database
 #' 
 #' Sub-class of fastq2otu S4 datatype.
-#' @keyword internal
+
 #' @export
 setClass("fastSeqDump", 
 			slots = c(
@@ -509,7 +509,7 @@ setClass("fastSeqDump",
 #' script.
 #' 
 #' Sub-class of fastSingle and fastPaired S4 datatypes.
-#' @keyword internal
+
 #' @export
 setClass("fastPrimerTrim",
 			slots = c(
@@ -546,7 +546,7 @@ setClass("fastPrimerTrim",
 #' Requires FASTQC to be installed onto system.
 #' 
 #' Sub-class of fastq2otu S4 datatype.
-#' @keyword internal
+
 #' @export
 setClass("fastReport", 
 			slots = c(

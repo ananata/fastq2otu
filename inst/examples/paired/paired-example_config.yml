@@ -1,5 +1,5 @@
 #=========================
-# Use the following file as a template:
+# Use the following file as a template when handling paired-end data:
 # ========================
 
 # === General Inputs ===
@@ -8,9 +8,8 @@ outDir: fastq2otu/inst/examples/paired/output
 pathToData: fastq2otu/inst/examples/paired/output/seq_files
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Optional: Provide when using fastq-dump
-# fastaPattern: ["^.*1\\.fastq(.gz)?$", "^.*1\\.fastq(.gz)?$"] # -- Use for paired-end data (modify to suit needs - quotation marks are required)
-fastaPattern: ^.*[1,2]?.fastq(.gz)?$
+pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Provide when using fastq-dump
+fastaPattern: ["^.*1\\.fastq(.gz)?$", "^.*1\\.fastq(.gz)?$"] # Quotation marks required
 
 # === Trimming Adapters ===
 # Trimmed sequences are written to pathToData parameter

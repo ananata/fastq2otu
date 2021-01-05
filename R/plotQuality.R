@@ -1,5 +1,5 @@
 #" Generate Quality Distribution as Aggregrated Plot
-#' 
+#' @title plotQuality
 #' @param fp Path to directory containing FASTQ files
 #' @param label Unique file or project id used to generate file/plot title
 #' @param object fastPlotQuality object 

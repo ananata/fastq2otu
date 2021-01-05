@@ -1,7 +1,7 @@
 library(testthat)
 context("Run entire pipeline")
 
-root <- "/fastq2otu/"
+root <- "/gpfs_fs/vahmp/users/Fettweis/Atopobium_NTA/Wright_Collaboration/r_package/fastq2otu/"
 
 source(paste0(root, "R/readConfig.R"))
 source(paste0(root, "R/getSeqs.R"))
@@ -32,6 +32,6 @@ single_config <- paste0(root, "inst/examples/single/my_single-example_config.yml
 single_options <- yaml::yaml.load_file(single_config)
 
 message("Running Single-End Analysis")
-runPipeline(configFile = single_config, isPaired = FALSE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = TRUE,
+runPipeline(configFile = single_config, isPaired = FALSE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = FALSE,
 	getTrimmedAdapters = FALSE)
 

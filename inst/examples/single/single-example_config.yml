@@ -1,5 +1,5 @@
 #=========================
-# Use the following file as a template:
+# Use the following file as a template when handling single-end data
 # ========================
 
 # === General Inputs ===
@@ -9,7 +9,7 @@ pathToData: fastq2out/inst/examples/single/output/seq_files
 verbose: TRUE
 multithread: TRUE
 pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
-fastaPattern: ^.*[1,2]?.fastq(.gz)?$
+fastaPattern: "*.fastq(.gz)?$"
 
 # === Trimming Adapters (for bbduk.sh) ===
 # Trimmed sequences are written to pathToData parameter
