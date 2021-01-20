@@ -19,110 +19,6 @@ FASTQ2OTU's workflow can be broken down into multiple stages:
 * Outputs are automatically generated
 * Easy to use
 
-## Directory Overview
-```
-fastq2otu:.
-|   DESCRIPTION
-|   fastq2otu.Rproj
-|   NAMESPACE
-|   README.md
-|
-+---inst
-|   +---bash
-|   |       reformat_fastq.sh
-|   |       retrieve_sra_sequences.sh
-|   |       use_bbduk.sh
-|   |
-|   \---examples
-|       |   
-|       |
-|       +---paired
-|       |       paired-example_config.yml
-|       |       paired-example_SRR_Acc_List.txt
-|       |       paired-example_SRR_Url_List.txt     
-|       |
-|       \---single
-|               single-example_config.yml
-|               single-example_SRR_ACC_List.txt
-|
-+---man
-|       assignSeqTaxonomy.Rd
-|       check_assign_tax.Rd
-|       check_fastPaired.Rd
-|       check_fastq2otu.Rd
-|       check_fastSingle.Rd
-|       check_filt_params.Rd
-|       check_primer_trim.Rd
-|       check_seq_dump.Rd
-|       dadaSeqs.Rd
-|       fastAssignTaxa-class.Rd
-|       fastFilter-class.Rd
-|       fastPaired-class.Rd
-|       fastPlotQuality-class.Rd
-|       fastPrimerTrim-class.Rd
-|       fastq2otu-class.Rd
-|       fastReport-class.Rd
-|       fastSeqDump-class.Rd
-|       fastSingle-class.Rd
-|       filtTrim.Rd
-|       getRowSums.Rd
-|       getSeqs.Rd
-|       makeSeqsTable.Rd
-|       mergeSamples.Rd
-|       plot_quality.Rd
-|       readConfig.Rd
-|       removeChimeras.Rd
-|       runFastqc.Rd
-|       runPipeline.Rd
-|       saveSeqs.Rd
-|       saveTaxonomyTables.Rd
-|       setFastAssignTaxa.Rd
-|       setFastFilter.Rd
-|       setFastPaired.Rd
-|       setfastPlotQuality.Rd
-|       setFastPrimerTrim.Rd
-|       setFastReport.Rd
-|       setFastSeqDump.Rd
-|       setFastSingle.Rd
-|       trimAdapters.Rd
-|
-+---R
-|       assignSeqTaxonomy.R
-|       filtTrim.R
-|       getRowSums.R
-|       getSeqs.R
-|       mergeSamples.R
-|       mergeSeqPairs.R
-|       plotQuality.R
-|       readConfig.R
-|       removeChimeras.R
-|       runFastqc.R
-|       runPipeline.R
-|       saveSeqs.R
-|       saveTaxonomyTables.R
-|       setup.R
-|       trimAdapters.R
-|
-\---tests
-    \---testthat
-            test-assignSeqTaxonomy.R
-            test-dadaSeqs.R
-            test-filtTrim.R
-            test-getRowSums.R
-            test-getSeqs.R
-            test-mergeSamples.R
-            test-mergeSeqPairs.R
-            test-plotQuality.R
-            test-readConfig.R
-            test-removeChimeras.R
-            test-runFastqc.R
-            test-runPipeline.R
-            test-saveSeqs.R
-            test-saveTaxonomyTables.R
-            testthat.R
-```
-For navigation purposes, the above diagram has been provided as a general schematic of all the files and sub-directories located within the FASTQ2OTU package. 
-
 ## Getting Started
 After installing FASTQ2OTU, the following input files and/or directories will be required to begin processing data:
 - A YML-formatted config file containing all parameters (more information about the config file can be found below).
@@ -179,20 +75,22 @@ To download datasets using NCBI's fastq-dump utility, download the [sra-toolkit]
 ##### Using WGET
 To download datasets from SRA using `wget`, navigate to [SRA-Explorer](https://sra-explorer.info/) and input your project ID. Once you click the search icon, a table should appear at the bottom of the window. Select all rows in the tables and store the results by clicking the blue "Add to Collection" button on the right. Please not that the search only outputs a certain number of results each time (with the max being 500). In order to obtain data on more than 500 samples, you must update the "Start at Record" text box after each search. Once you have stored all your samples in your collection, click the shopping cart icon on the top right. Click the tab that says "Raw FastQ Download URLs" and select the download link. Record the path to the downloaded text file in the config file and make sure to set the `getDownloadedSeqs` parameter to TRUE, when executing the `runPipeline()` function. 
 
-#### Generating FASTQCR Report
-When `getGeneratedReport` is TRUE, [FASTQCR](https://cran.r-project.org/web/packages/fastqcr/readme/README.html) is used to generate a FASTQCR report that provided quality  information about all input data. 
-
 ## Installation
 This application is designed to be lightweight and simple to use. The intended use is via a remote server, however it can also be run using RStudio (the package was written in R 3.5.3) and can be downloaded from Github using [devtools](https://github.com/r-lib/devtools). 
 
 ```
-# Install devtools 
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-devtools::install_github("ananata/fastq2otu")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("Biostrings")
+BiocManager::install("ShortRead")
+BiocManager::install("dada2")
+BiocManager::install("gtools")
 
-# Load package into environoment
-library("ananata/fastq2otu")
+# Install package into environment
+install.packages("devtools")
+library(devtools)
+install_github("ananata/fastq2otu")
+library("FASTQ2OTU")
 
 ```
 
@@ -217,11 +115,13 @@ library("ananata/fastq2otu")
 |pathToFastqcResults|Character| N/A | Path to the directory storing the FASTQC reports. |
 |taxDatabase|Character|N/A| Required. Path to reference taxonomy database. |
 
-Please refer to template config file for a more comprehensive list of the available parameters. 
+Please refer to a template config file for a more comprehensive list of the available parameters. 
 
 ## Authors
 
-- **Nana Afia Twumasi-Ankrah** - *Primary developer*
+- **Nana Afia Twumasi-Ankrah**
+- **Dennis Wylie, PhD**
+- **Jennifer Fettweis, PhD**
 
 ## License
 
@@ -230,10 +130,9 @@ This license restricts the usage of this application for non-open sourced system
 
 ## Acknowledgments
 
-We would like to thank the following:
 * DADA2's Original Developers (Callahan Lab)
 * Virginia Commonwealth University - Vaginal Microbiome Consortium
-* University of Texas - Austin
+* University of Texas - Austin 
 * Emory University
 
 
