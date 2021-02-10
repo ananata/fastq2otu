@@ -48,7 +48,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   
   # Save all outputs to file
   if (!is.null(options$projectPrefix)) {
-    con <- file(file.path(c(out, paste0(options$projectPrefix, "_fastq2otu_output.log")))
+    con <- file(file.path(c(out, paste0(options$projectPrefix, "_fastq2otu_output.log"))))
   } else {
     con <- file(file.path(c(out, "fastq2otu_output.log")))
     options$projectPrefix <- "fastq2otu_project" # Changed to default
