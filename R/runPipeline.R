@@ -8,7 +8,7 @@ NULL
 #' The analysis takes place in multiple steps beginning at the creation of a central output directory. Once the directory
 #' is created, a log-file is initilized that will contain all messages produced by DADA2. Accompanying the log file is a summary
 #' table documenting changes in read frequency following filtering and trimming procedures. This summary table can be used
-#' as a reference when determining the best way to modify different parameters input into the different functions.
+#' as a reference when determining the best way to modify the parameters entered into the different functions.
 #'
 #' @param plotQuality Default is TRUE. Sequence quality distribution is plotted using DADA2's plotQualityProfile method.
 #' @param isPaired Default if FALSE. If TRUE workflow for paired end data is executed.
@@ -143,7 +143,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     finalTable <- mergeSamples(unique(pathToOTUTables), unique(pathToSeqTables), options$projectPrefix, options$assignTaxLevels)
     
     if (typeof(finalTable) == FALSE) {
-      message("A merged table was not created")
+      message("Unable to create merged table")
     } else {
       message("Created: ", finalTable)
       
