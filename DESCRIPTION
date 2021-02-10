@@ -22,9 +22,9 @@ Imports:
     parallel (>= 3.2.0),
     IRanges (>= 2.6.0),
     XVector (>= 0.16.0),
-    BiocGenerics (>= 0.22.0)
-    yaml (>= 2.2.1)
-    gtools (>= 3.8.2)
+    BiocGenerics (>= 0.22.0),
+    yaml (>= 2.2.1),
+    gtools (>= 3.8.2),
     dada2 (>= 1.14.1)
 Suggests:
     BiocStyle,
