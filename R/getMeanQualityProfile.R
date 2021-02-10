@@ -21,7 +21,7 @@
 #' @return A table with the following column names: c("Position", "Mean", "Orientation", "Study")
 #'  
 #' @importFrom ShortRead qa
-#' @import ggplot2
+#' 
 #'
 #' @example getMeanQualityProfile(f1, project = "Study1")
 #' @export
@@ -33,7 +33,7 @@ getMeanQualityProfile <- function(fl, n=500000, project, layout = "Single") {
   
   FIRST <- TRUE
   for(f in fl[!is.na(fl)]) {
-    srqa <- qa(f, n=n)
+    srqa <- ShortRead::qa(f, n=n)
     df <- srqa[["perCycle"]]$quality
     rc <- sum(srqa[["readCounts"]]$read) # Handle aggregate form from qa of a directory
     if (rc >= n) { 
@@ -54,7 +54,7 @@ getMeanQualityProfile <- function(fl, n=500000, project, layout = "Single") {
   # Create plot
   plotdf.summary <- aggregate(Count ~ Cycle + Score, plotdf, sum)
   plotdf.summary$label <- paste(nrow(anndf), "files (aggregated)")
-  means <- rowsum(plotdf.summary$Score*plotdf.summary$Count, plotdf.summary$Cycle)/rowsum(plotdf.summary$Count, plotdf.summary$Cycle)
+  means <- rowsum(as.numeric(plotdf.summary$Score*plotdf.summary$Count), as.numeric(plotdf.summary$Cycle)/rowsum(plotdf.summary$Count), plotdf.summary$Cycle)
   statdf.summary <- data.frame(Position=as.integer(rownames(means)), Mean=means, Orientation=rep(layout, length(means)),
                                Study=rep(project, length(means)))
   return(statdf.summary)

@@ -17,14 +17,15 @@ NULL
 #' @param downloadSeqs Default is FALSE. If TRUE, users will be able to retrieve FASTQ files from SRA using the fastq2otu's getSeqs method.
 #' @param trimAdapters Default is FALSE. If TRUE, users will be able to remove adapters sequences from data using BBTools bbduk.sh script.
 #' @importFrom yaml yaml.load_file
-#' @importFrom dada2 dada derepFastq learnErrors plotErrors getUniques makeSequenceTable removeBimeraDenovo
+#' @import dada2
 #'
 #' @export
 
 # ======
 # MAIN METHOD
 # ======
-runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = FALSE, getTrimmedAdapters = FALSE) {
+runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMergedSamples = TRUE, getDownloadedSeqs = FALSE,
+		getTrimmedAdapters = FALSE) {
   if (!file.exists(configFile)) {
     stop(sprintf("'%s' could not be found, please enter a valid path", configFile))
   }
@@ -47,10 +48,10 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   
   # Save all outputs to file
   if (!is.null(options$projectPrefix)) {
-    con <- file(paste0(options$projectPrefix, "_fastq2otu_output.log"))
+    con <- file(file.path(c(out, paste0(options$projectPrefix, "_fastq2otu_output.log")))
   } else {
-    con <- file("fastq2otu_output.log")
-    options$projectPrefix <- "myproject" # Changed to default
+    con <- file(file.path(c(out, "fastq2otu_output.log")))
+    options$projectPrefix <- "fastq2otu_project" # Changed to default
   }
   
   sink(con, append=TRUE)
@@ -71,7 +72,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     object <- readConfig(configFile, type = "seqdump")
     fp <- getSeqs(object)
   }
-  
+
   # Remove primers and update path
   if (getTrimmedAdapters) {
     message("\n==== Removing Primers ====")
@@ -80,7 +81,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   } else {
     fp <- options$pathToData
   }
-  
+    
   # Plot Quality Distribution and save object
   if (getQuality) {
     message("\n==== Plotting quality distribution BEFORE trimming ====")
@@ -93,8 +94,8 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     # Write PDF files in output directory
     if (!is.null(plots)) {
       message("Created: ", paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf"))
-      pdf(file = paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf"))
-      plots
+      pdf(file = file.path(c(out, paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf"))))
+	      print(plots)
       dev.off()
     } else {
       stop("Unable to write quality plots to PDF") # Should rarely execute. Mostly for debugging purposes
@@ -106,7 +107,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     if (!is.null(options$fastaPattern) & length(options$fastaPattern) == 2) {
       REGEX_PAT <- options$fastaPattern
     } else {
-      message("Missing Input Error: Invalid input provided for fastaPattern. Defaults will be used instead.")
+      message("Missing Input Warning: fastaPattern defaults used.")
       REGEX_PAT <- c("*_1.fastq(.gz)?", "*_2.fastq(.gz)?")
     }
     # === Analyze as paired-end data ===
@@ -256,7 +257,7 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
       if (!is.null(plots)) {
         message("Created: ", paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf\n"))
         pdf(file = paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf"))
-        plots
+        	print(plots)
         dev.off()
       } else {
         stop("Unable to write quality plots to PDF") # Should rarely execute. Mostly for debugging purposes

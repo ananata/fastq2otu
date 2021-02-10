@@ -64,15 +64,15 @@ plotSeqOverlap <- function(tabF, tabR, primerF, primerR, projectLabel = "Paired-
   clean_primerF <- gsub("[[:space:]]", "", primerF)
   clean_primerR <- gsub("[[:space:]]", "", primerR)
   
-  ecoli_seq <- DNAString(clean_ref)
-  primerF_seq <- DNAString(clean_primerF)
-  primerR_seq <- reverseComplement(DNAString(clean_primerR)) # Take the reverse complement of the sequence
+  ecoli_seq <- Biostrings::DNAString(clean_ref)
+  primerF_seq <- Biostrings::DNAString(clean_primerF)
+  primerR_seq <- Biostrings::reverseComplement(Biostrings::DNAString(clean_primerR)) # Take the reverse complement of the sequence
   
   # First use a fixed substitution matrix
-  mat <- nucleotideSubstitutionMatrix(match = matchScore, mismatch = mismatchScore, baseOnly = TRUE)
+  mat <- Biostrings::nucleotideSubstitutionMatrix(match = matchScore, mismatch = mismatchScore, baseOnly = TRUE)
   
   # Align the forward primer to the ecoli rRNA gene
-  alignF <- pairwiseAlignment(ecoli_seq, primerF_seq, type = "local", substitutionMatrix = mat,
+  alignF <- Biostrings::pairwiseAlignment(ecoli_seq, primerF_seq, type = "local", substitutionMatrix = mat,
                               gapOpening = gapOpeningScore, gapExtension = gapExtensionScore)
   if (alignF@score < minScore) {
     stop("Primer could not be detected")
@@ -83,7 +83,7 @@ plotSeqOverlap <- function(tabF, tabR, primerF, primerR, projectLabel = "Paired-
   seqStartF <- align_startF + length(primerF)
   
   # Align the reverse primer to the ecoli rRNA gene
-  alignR <- pairwiseAlignment(ecoli_seq, primerR_seq, type = "local", substitutionMatrix = mat,
+  alignR <- Biostrings::pairwiseAlignment(ecoli_seq, primerR_seq, type = "local", substitutionMatrix = mat,
                               gapOpening = gapOpeningScore, gapExtension = gapExtensionScore)
   if (alignR@score < minScore) {
     stop("Primer could not be detected")
@@ -95,7 +95,7 @@ plotSeqOverlap <- function(tabF, tabR, primerF, primerR, projectLabel = "Paired-
 
   # Prepare graph
   COLORS <- c("Forward" = "#00AFBB", "Reverse" = "#E7B800")
-  overlap <- ggplot(data=tabF, aes(x=Position + seqStartF, y=Mean)) +
+  overlap <- ggplot2::ggplot(data=tabF, aes(x=Position + seqStartF, y=Score)) +
                 geom_line(color = COLORS["Forward"], size = 1) +
                 geom_area(fill = COLORS["Forward"], alpha = 0.4) +
                 geom_line(data = tabR, aes(x = rev(Position + seqStartR), y = Score), color = COLORS["Reverse"], size = 1) +
@@ -117,9 +117,13 @@ plotSeqOverlap <- function(tabF, tabR, primerF, primerR, projectLabel = "Paired-
                     limits = c(0, signif(max(rev(tabR$Position + seqStartR) + 100), 1))
                     )
   # Save plot 
-  ggsave(paste0(projectLabel, "_unmerged_paired_reads.pdf"),
-         plot = overlap, 
-         device = "pdf")
+  #ggplot2::ggsave(paste0(projectLabel, "_unmerged_paired_reads.pdf"),
+  #       plot = overlap, 
+  #       device = "pdf")
+  pdf(file=paste0(projectLabel, "_unmerged_paired_reads.pdf"), onefile=F)
+	print(overlap)
+  dev.off()
+
   message("Created: ", paste0(projectLabel, "_unmerged_paired_reads.pdf"))
   message("Forward Start Position: ", seqStartF)
   message("Reverse Start Position: ", seqStartR)
