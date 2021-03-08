@@ -3,7 +3,7 @@
 NULL
 
 
-#' Execute project workflow from FASTQ input to OTU output using DADA2 Workflow
+#' runPipeline
 #'
 #' The analysis takes place in multiple steps beginning at the creation of a central output directory. Once the directory
 #' is created, a log-file is initilized that will contain all messages produced by DADA2. Accompanying the log file is a summary

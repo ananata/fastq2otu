@@ -10,7 +10,7 @@ Authors@R:
 Description: Automatically analyze aggregated meta-genomic datasets. 
 License: LGPL-3
 Depends:
-    R (>= 3.4.0),
+    R (>= 3.5.0),
     Rcpp (>= 0.12.0),
     methods (>= 3.4.0)
 Imports:
