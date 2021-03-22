@@ -2,6 +2,7 @@
 #' Parses list of SRA accession numbers and uses fastq-dump to download FASTQ files directly from NCBI.
 #' Downloaded files are gziped by default. 
 #' 
+#' @importFrom curl curl_download
 #' @param object S4 object of type fastq2otu (i.e. fastq2otu_paired or fastq2otu_single)
 #' @param useFastqDump Default is FALSE. If TRUE, fastqdump is used to download sequence files. 
 #' @return path to directory
@@ -55,6 +56,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
  	  dir.create(object@outDir)
 	  message("Created ", object@outDir)
 	} else {
+	  closeAllConnections()
 	  stop("Program was stopped. Could not create output directory")
 	}
     }
@@ -66,20 +68,32 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     if (!is.null(object@pathToSampleIDs) & file.exists(object@pathToSampleURLs)) {
       sample.urls <- object@pathToSampleURLs
     } else {
+      closeAllConnections()
       stop(paste0("Invalid input for pathToSampleURLs. ", object@pathToSampleURLs, " could not be found."))
     }
     
     # Set system command
-    if(.Platform$OS.type == "unix") {
-      command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
-      message("This is my output path: ", object@outDir)
-      output <- object@outDir # Writes to input directory 
-    } else {
+    #if(.Platform$OS.type == "unix") {
+    #  command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
+    #  message("This is my output path: ", object@outDir)
+    #  output <- object@outDir # Writes to input directory 
+    #} else {
 	# TODO: Test on windows machine
-      command <- paste0("xargs -n 1 curl -O < ", sample.urls)
-      message("Executed: ", command, "\n")
-      output <- object@outDir # Writes to input directory
-    }
+    #  command <- paste0("xargs -n 1 curl -O < ", sample.urls)
+    #  message("Executed: ", command, "\n")
+    #  output <- object@outDir # Writes to input directory
+    #}
+ 
+    # Read file one line at a time
+    con = file(sample.urls, "r")
+    while ( TRUE ) {
+      line = readLines(con, n = 1)
+      if ( grepl('^ftp', line) ) {
+        break
+      }
+        curl::curl_download(line, file.path(object@outDir, basename(line))
+      }
+    close(con)
   }
   
   # Execute command
