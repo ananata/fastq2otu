@@ -73,27 +73,34 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     }
     
     # Set system command
-    #if(.Platform$OS.type == "unix") {
-    #  command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
-    #  message("This is my output path: ", object@outDir)
-    #  output <- object@outDir # Writes to input directory 
-    #} else {
-	# TODO: Test on windows machine
-    #  command <- paste0("xargs -n 1 curl -O < ", sample.urls)
-    #  message("Executed: ", command, "\n")
-    #  output <- object@outDir # Writes to input directory
-    #}
+    if(.Platform$OS.type == "unix") {
+      command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
+      message("This is my output path: ", object@outDir)
+      output <- object@outDir # Writes to input directory 
+    } else {
+      con = file(sample.urls, "r")
+      while ( TRUE ) {
+         line = readLines(con, n = 1)
+         if ( grepl('^ftp', line) ) {
+           break
+         }
+        curl::curl_download(line, file.path(object@outDir, basename(line)))
+      }
+      close(con)
+
+      output <- object@outDir # Writes to input directory
+    }
  
     # Read file one line at a time
-    con = file(sample.urls, "r")
-    while ( TRUE ) {
-      line = readLines(con, n = 1)
-      if ( grepl('^ftp', line) ) {
-        break
-      }
-        curl::curl_download(line, file.path(object@outDir, basename(line))
-      }
-    close(con)
+    #con = file(sample.urls, "r")
+    #while ( TRUE ) {
+    #  line = readLines(con, n = 1)
+    #  if ( grepl('^ftp', line) ) {
+    #    break
+    #  }
+    #    curl::curl_download(line, file.path(object@outDir, basename(line)))
+    #  }
+    #close(con)
   }
   
   # Execute command
