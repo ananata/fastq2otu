@@ -9,7 +9,7 @@
 #' @export
 getSeqs <- function(object, useFastqDump = FALSE) {
   # Get bash script
-  retrieveSRAData <- system.file("bash", "retrieve_sra_sequences.sh", package = "fastq2otu")
+  retrieveSRAData <- system.file("bash", "retrieve_sra_sequences.sh", package = "FASTQ2OTU")
 
   if (useFastqDump) {
     # Extract required inputs
