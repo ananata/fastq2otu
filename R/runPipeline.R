@@ -48,34 +48,32 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   
   # Save all outputs to file
   if (!is.null(options$projectPrefix)) {
-    con <- file(file.path(out, paste0(options$projectPrefix, "_fastq2otu_output.log")))
+    log.file <- file.path(out, paste0(options$projectPrefix, "_fastq2otu_output.log"))
   } else {
-    con <- file(file.path(out, "fastq2otu_output.log"))
+    log.file <- file.path(out, "fastq2otu_output.log")
     options$projectPrefix <- "fastq2otu_project" # Changed to default
   }
-  
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
-  
+    
   # Print the date
-  message("Date: ", Sys.Date())
-  message("\nAnalyzing data for ", options$projectPrefix)
+  write(paste0("Date: ", Sys.Date()), log.file, append = TRUE)
+  write(paste0("Analyzing data for ", options$projectPrefix), log.file, append = TRUE)
   
   # Print package versions
-  message("\nR version: ", version$version.string)
-  message("\nDADA2 Version: ", packageVersion("dada2"))
-  message("\nYAML Version: ", packageVersion("yaml"))
+  write(paste0("R version: ", version$version.string), log.file, append = TRUE)
+  write(paste0("DADA2 Version: ", packageVersion("dada2")), log.file, append = TRUE)
+  write(paste0("YAML Version: ", packageVersion("yaml")), log.file, append = TRUE)
   
   # Download sequences - tested on 8/26/2020
   if (getDownloadedSeqs == TRUE) {
-    message("\n==== Downloading sequences from NCBI ====")
+    write("==== Downloading sequences from NCBI ====", log.file, append = TRUE)
+    message("==== Downloading sequences from NCBI ====")
     object <- readConfig(configFile, type = "seqdump")
     fp <- getSeqs(object)
   }
 
   # Remove primers and update path
   if (getTrimmedAdapters) {
-    message("\n==== Removing Primers ====")
+    write("==== Removing Primers ====", log.file, append = TRUE)
     object <- readConfig(configFile, type = "primertrim")
     fp <- trimAdapters(object)
   } else {
@@ -84,15 +82,18 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     
   # Plot Quality Distribution and save object
   if (getQuality) {
-    message("\n==== Plotting quality distribution BEFORE trimming ====")
+    write("==== Plotting quality distribution BEFORE trimming ====", log.file, append = TRUE)
     plot.object <- readConfig(configFile, type = "qualityplot")
-    if (is.null(plot.object))
+    if (is.null(plot.object)) {
+      message("Unable to generate quality plot object")
       stop("Unable to generate quality plot object")
-    
+    }
+
     plots <- plotQuality(fp, options$projectPrefix, plot.object)
     
     # Write PDF files in output directory
     if (!is.null(plots)) {
+      write(paste0("Created: ", paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf")), log.file, append = TRUE)
       message("Created: ", paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf"))
       pdf(file = file.path(out, paste0(options$projectPrefix, "_fastq2otu_quality_plots_BEFORE.pdf")))
 	      print(plots)
@@ -108,11 +109,14 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
       REGEX_PAT <- options$fastaPattern
     } else {
       message("Missing Input Warning: fastaPattern defaults used.")
+      print("Using fastqPattern defaults")
       REGEX_PAT <- c("*_1.fastq(.gz)?", "*_2.fastq(.gz)?")
     }
+
     # === Analyze as paired-end data ===
     sample.names <- na.omit(sapply(strsplit(basename(sort(list.files(fp, pattern = REGEX_PAT[1], full.names = TRUE))),REGEX_PAT[1]), `[`, 1))
-    amplicons <- paired_analysis(fp = fp, sample.names = sample.names, file = configFile, getQuality = getQuality, REGEX_1 = REGEX_PAT[1], REGEX_2 = REGEX_PAT[2])
+    amplicons <- paired_analysis(fp = fp, sample.names = sample.names, file = configFile, getQuality = getQuality, REGEX_1 = REGEX_PAT[1], REGEX_2 = REGEX_PAT[2], logFile = log.file)
+
   } else {
     # Get file extension pattern
     if (!is.null(options$fastaPattern) & length(options$fastaPattern) == 1) {
@@ -120,14 +124,16 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     } else {
       REGEX_PAT <- "*.fastq(.gz)?$"
     }
+
     # === Analyze single-end data ===
     sample.names <- na.omit(sapply(strsplit(basename(sort(list.files(fp, pattern = REGEX_PAT, full.names = TRUE))), REGEX_PAT), `[`, 1))
-    amplicons <- single_analysis(fp = fp, sample.names = sample.names, file = configFile, getQuality = getQuality, REGEX = REGEX_PAT)
+    amplicons <- single_analysis(fp = fp, sample.names = sample.names, file = configFile, getQuality = getQuality, REGEX = REGEX_PAT, logFile = log.file)
+
   }
   
   # Merge tables
   if (getMergedSamples) {
-    message("\n==== Merging OTU and Sequence Tables ====")
+    write("\n==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
     pathToOTUTables <- vector(mode="character", length=length(amplicons))
     pathToSeqTables <- vector(mode="character", length=length(amplicons))
     track <- matrix(, nrow = length(amplicons), ncol = 0)
@@ -143,17 +149,13 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     finalTable <- mergeSamples(unique(pathToOTUTables), unique(pathToSeqTables), options$projectPrefix, options$assignTaxLevels)
     
     if (typeof(finalTable) == FALSE) {
-      message("Unable to create merged table")
+      write("Unable to create merged table", log.file, append = TRUE)
+      print("Unable to create final table")
     } else {
-      message("Created: ", finalTable)
-      
+      write(paste0("Created: ", finalTable), log.file, append = TRUE)
     }
   }
-  
-  # Restore output to console
-  sink()
-  sink(type="message")
-  
+   
   # Switch working directory back to original working directory
   setwd(curr.wd)
   
@@ -164,7 +166,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
 # ======
 # Analyze Single-End
 # ======
-help_single_analysis <- function(filtFs, sName, index, options) {
+help_single_analysis <- function(filtFs, sName, index, options, logFile) {
   # Dereplicate Sequences
   derepFs <- dada2::derepFastq(filtFs)
   
@@ -202,17 +204,17 @@ help_single_analysis <- function(filtFs, sName, index, options) {
     
     # Save Sequence Table with chimeras labeled
     chim.print <- saveSeqs(seqtab.chim, sName, index, options$outDir, add.table = TRUE, options$projectPrefix)
-    message("Created: ", basename(chim.print))
+    write(paste0("Created: ", basename(chim.print)), logFile, append = TRUE)
   }
   
   # Save Sequence Table without chimeras
   seq.print <- saveSeqs(seqtab.nochim, sName, index, options$outDir, add.table = FALSE, options$projectPrefix)
-  message("Created: ", basename(seq.print))
+  write(paste0("Created: ", basename(seq.print)), logFile, append = TRUE)
   
   # Classify sequences
   taxa <- dada2::assignTaxonomy(seqtab.nochim, options$taxDatabase, minBoot = options$assignTaxMinBootstrap, multithread=options$multithread)
   f.print <- saveTaxonomyTables(taxa, sName, options$outDir, index, options$projectPrefix)
-  message("Created: ", basename(f.print), "\n")
+  write(paste0("Created: ", basename(f.print)), logFile, append = TRUE)
   
   # Get counts
   derep <- sum(dada2::getUniques(derepFs))
@@ -227,7 +229,7 @@ help_single_analysis <- function(filtFs, sName, index, options) {
   
 }
 
-single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = "*.fastq(.gz)?$") {
+single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = "*.fastq(.gz)?$", logFile) {
   # Create object - simplifies debugging process
   object <- readConfig(file, isPaired = FALSE, type = c('auto', 'filter'))
   
@@ -235,18 +237,16 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
   Fs <- sort(list.files(fp, pattern = REGEX, full.names = TRUE))
   
   # Filter and Trim (generates "filtered_objects.RData" file)
-  message("\n==== Filtering and Trimming Single-End Amplicon Sequences ====")
+  write("\n==== Filtering and Trimming Single-End Amplicon Sequences ====", logFile, append = TRUE)
   if (!is.null(object)) {
     filtered.files <- filtTrim(sample.names=sample.names, object=object, forwardFs=Fs)
-    message("Created: ")
-    lapply(filtered.files, message)
   } else {
     stop("Error created when creating filtering object")
   }
   
   # Plot Quality Distribution and save object
   if (getQuality) {
-    message("\n==== Plotting quality distribution AFTER trimming ====")
+    write("==== Plotting quality distribution AFTER trimming ====", logFile, append = TRUE)
     plot_object <- readConfig(file, type = "qualityplot")
     if (!is.null(plot_object)) {
       plots <- plotQuality(filtered.files, object@projectPrefix, plot_object)
@@ -255,7 +255,7 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
       
       # Write PDF files in output directory
       if (!is.null(plots)) {
-        message("Created: ", paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf\n"))
+        write(paste0("Created: ", paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf")), logFile, append = TRUE)
         pdf(file = paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf"))
         	print(plots)
         dev.off()
@@ -265,8 +265,6 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
     }
   }
     
-    # Create object - simplifies debugging process
-    options <- yaml::yaml.load_file(file)
     
     # Finish analysis
     infoList <- lapply(1:length(Fs), function(input, samples, config) {
@@ -358,19 +356,16 @@ help_paired_analysis <- function(filtFs, filtRs, sName, index, options) {
       
       # Save Sequence Table with chimeras labeled
       chim.print <- saveSeqs(seqtab.chim, sName, index, options$outDir, add.table = TRUE, options$projectPrefix)
-      message("Created: ", basename(chim.print))
     }
     
     # Save Sequence Table without chimeras
     seq.print <- saveSeqs(seqtab.nochim, sName, index, options$outDir, add.table = FALSE, options$projectPrefix)
-    message("Created: ", basename(seq.print))
     
     # Classify sequences
     taxa <- dada2::assignTaxonomy(seqtab.nochim, options$taxDatabase, minBoot = options$assignTaxMinBootstrap, multithread=options$multithread)
     
     # Save OTU table
     f.print <- saveTaxonomyTables(taxa, sName, options$outDir, index, options$projectPrefix)
-    message("Created: ", basename(f.print), "\n")
     
     # Get counts
     forward.derep <- sum(dada2::getUniques(derepFs))
@@ -387,7 +382,7 @@ help_paired_analysis <- function(filtFs, filtRs, sName, index, options) {
     return(c(seq.print, f.print, track))
   }
   
-paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 = "*_1.fastq(.gz)?$", REGEX_2 = "*_2.fastq(.gz)?$") {
+paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 = "*_1.fastq(.gz)?$", REGEX_2 = "*_2.fastq(.gz)?$", logFile) {
     # Sort path to extract all .fastq files (allows .fastq or .fastq.gz file extensions)
     Fs <- sort(list.files(fp, pattern = REGEX_1, full.names = TRUE))
     Rs <- sort(list.files(fp, pattern = REGEX_2, full.names = TRUE))
@@ -400,11 +395,9 @@ paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 
     object <- readConfig(file, isPaired = TRUE, type = c('auto', 'filter'))
     
     # Filter and Trim
-    message("\n==== Filtering and Trimming Paired-End Amplicon Sequences ====")
+    write("==== Filtering and Trimming Paired-End Amplicon Sequences ====", logFile, append = TRUE)
     if (!is.null(object)) {
       filtered.files <- filtTrim(sample.names=sample.names, object=object, forwardFs=Fs, reverseRs=Rs)
-      message("Created: ")
-      lapply(filtered.files, message)
     } else {
       stop("Error generated when creating fastFilt object")
     }
@@ -415,16 +408,16 @@ paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 
     
     # Plot Quality Distribution and save object
     if (getQuality) {
-      message("\n==== Plotting quality distribution AFTER trimming ====")
+      write("==== Plotting quality distribution AFTER trimming ====", logFile, append = TRUE)
       plot_object <- readConfig(file, type = "qualityplot")
       ordered.files <- c(rbind(filt.forward, filt.reverse)) # Alternate plots from forward and reverse sequences
       plots <- plotQuality(ordered.files, options$projectPrefix, plot_object)
       
       # Write PDF files in output directory
       if (!is.null(plots)) {
-        message("Created: ", paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf\n"))
+        write(paste0("Created: ", paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf")), logFile, append = TRUE)
         pdf(file = paste0(object@projectPrefix, "_fastq2otu_quality_plots_AFTER.pdf"))
-        plots
+        	print(plots)
         dev.off()
       } else {
         stop("Unable to write quality plots to PDF") # Should rarely execute. Mostly for debugging purposes

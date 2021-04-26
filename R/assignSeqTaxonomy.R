@@ -5,7 +5,7 @@
 #' @param object S4 object of type fastq2otu (i.e. fastPaired, fastSingle)
 #' @importFrom dada2 assignTaxonomy
 #' @return OTU table
-#' @export 
+#' 
 assignSeqTaxonomy <- function(seqtab, object) {
   # Load required libraries
   # Extract required parameters
