@@ -40,6 +40,7 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_filt_trimmed.fastq"))
 		undownloaded_filtFs <- filtFs[lapply(filtFs, file.exists) == FALSE]
 		forwardFs <- forwardFs[undownloaded_filtFs]
+		print(length(undownloaded_filtFs) == length(forwardFs))
 
 		if (length(undownloaded_filtFs) != 0) {
 			# Filter and Trim (only executes filtered paths that do not already exist)
