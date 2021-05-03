@@ -74,7 +74,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     
     # Set system command
     if(.Platform$OS.type == "unix") {
-      command <- paste0("wget -i ", sample.urls, " -P ", object@outDir)
+      command <- paste0("wget -i ", sample.urls, " -P ", " -c ", object@outDir)
       message("This is my output path: ", object@outDir)
       output <- object@outDir # Writes to input directory 
     } else {
@@ -87,27 +87,16 @@ getSeqs <- function(object, useFastqDump = FALSE) {
         curl::curl_download(line, file.path(object@outDir, basename(line)))
       }
       close(con)
-
       output <- object@outDir # Writes to input directory
+      return(output)
     }
- 
-    # Read file one line at a time
-    #con = file(sample.urls, "r")
-    #while ( TRUE ) {
-    #  line = readLines(con, n = 1)
-    #  if ( grepl('^ftp', line) ) {
-    #    break
-    #  }
-    #    curl::curl_download(line, file.path(object@outDir, basename(line)))
-    #  }
-    #close(con)
   }
   
   # Execute command
   system(command)
 
   # Return vector containing output directory and input command
-  return(c(output, command))
+  return(output)
 }
 
 

@@ -63,7 +63,6 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   write(paste0("DADA2 Version: ", packageVersion("dada2")), log.file, append = TRUE)
   write(paste0("YAML Version: ", packageVersion("yaml")), log.file, append = TRUE)
   
-  # Download sequences - tested on 8/26/2020
   if (getDownloadedSeqs == TRUE) {
     write("==== Downloading sequences from NCBI ====", log.file, append = TRUE)
     message("==== Downloading sequences from NCBI ====")
