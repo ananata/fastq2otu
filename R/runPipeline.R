@@ -73,6 +73,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   # Remove primers and update path
   if (getTrimmedAdapters) {
     write("==== Removing Primers ====", log.file, append = TRUE)
+    message("==== Removing Primers ====")
     object <- readConfig(configFile, type = "primertrim")
     fp <- trimAdapters(object)
   } else {
@@ -82,6 +83,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   # Plot Quality Distribution and save object
   if (getQuality) {
     write("==== Plotting quality distribution BEFORE trimming ====", log.file, append = TRUE)
+    message("==== Plotting quality distribution BEFORE trimming ====")
     plot.object <- readConfig(configFile, type = "qualityplot")
     if (is.null(plot.object)) {
       message("Unable to generate quality plot object")
@@ -132,7 +134,8 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   
   # Merge tables
   if (getMergedSamples) {
-    write("\n==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
+    write("==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
+    message("==== Merging OTU and Sequence Tables ====")
     pathToOTUTables <- vector(mode="character", length=length(amplicons))
     pathToSeqTables <- vector(mode="character", length=length(amplicons))
     track <- matrix(, nrow = length(amplicons), ncol = 0)
