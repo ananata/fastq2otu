@@ -237,7 +237,7 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
   Fs <- sort(list.files(fp, pattern = REGEX, full.names = TRUE))
   
   # Filter and Trim (generates "filtered_objects.RData" file)
-  write("\n==== Filtering and Trimming Single-End Amplicon Sequences ====", logFile, append = TRUE)
+  write("==== Filtering and Trimming Single-End Amplicon Sequences ====", logFile, append = TRUE)
   if (!is.null(object)) {
     filtered.files <- filtTrim(sample.names=sample.names, object=object, forwardFs=Fs)
   } else {
@@ -264,6 +264,8 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
       }
     }
   }
+   
+  options <- yaml::yaml.load_file(file)
     
     
     # Finish analysis

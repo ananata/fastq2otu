@@ -69,7 +69,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
 
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
   final.tab <- mergedOTU[ , 1:length(byCols)]
-  final.tab <- cbind(final.tab, transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs)])
+  final.tab <- cbind(final.tab, transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE])
 
   # Copy the final table
   prop.tab <- final.tab
