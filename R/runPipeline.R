@@ -141,11 +141,11 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     write("==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
     message("==== Merging OTU and Sequence Tables ====")
     # Find path to data
-    pathToSeqTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables")))
+    pathToSeqTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables"))
     seq.paths <- list.files(path = pathToSeqTables, recursive = TRUE,
                             pattern = "\\.rds$", 
                             full.names = TRUE)	# Get RDS files
-    pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables")))
+    pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables"))
     otu.paths <- list.files(path = pathToOTUTables, recursive = TRUE,
                             pattern = "\\.csv$",
                             full.names = TRUE)  # Get CSV files
