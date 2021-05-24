@@ -276,7 +276,7 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
     
     # Finish analysis
     infoList <- lapply(1:length(Fs), function(input, samples, config) {
-      return(help_single_analysis(filtered.files[[input]], sName=samples[input], index=input, options=config))
+      return(help_single_analysis(filtered.files[[input]], sName=samples[input], index=input, options=config, logFile=logFile))
     }, samples=sample.names, config=options)
     
     message("\n==== Create Summary Table ====")
