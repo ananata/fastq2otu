@@ -145,7 +145,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     seq.paths <- list.files(path = pathToSeqTables, recursive = TRUE,
                             pattern = "\\.rds$", 
                             full.names = TRUE)	# Get RDS files
-    pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables"))
+    pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_taxonomy_tables"))
     otu.paths <- list.files(path = pathToOTUTables, recursive = TRUE,
                             pattern = "\\.csv$",
                             full.names = TRUE)  # Get CSV files
