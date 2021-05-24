@@ -38,9 +38,13 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 	} else {		
 		# Create output file names for filtered sequences
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_filt_trimmed.fastq"))
-		undownloaded_filtFs <- filtFs[lapply(filtFs, file.exists) == FALSE]
-		forwardFs <- forwardFs[undownloaded_filtFs]
-		print(length(undownloaded_filtFs) == length(forwardFs))
+		if (all(lapply(filtFs, file.exists) == FALSE)) {
+        		undownloaded_filtFs <- filtFs
+      		} else {
+        		# Remove files that already exist
+       			undownloaded_filtFs <- filtFs[-grep(FALSE, lapply(filtFs, file.exists) == FALSE)]
+        		forwardFs <- forwardFs[-grep(FALSE, c(lapply(filtFs, file.exists) == FALSE, FALSE, FALSE))]
+      		}
 
 		if (length(undownloaded_filtFs) != 0) {
 			# Filter and Trim (only executes filtered paths that do not already exist)
