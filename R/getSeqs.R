@@ -82,7 +82,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
          line = readLines(con, n = 1)
          if ( grepl('^ftp', line) ) {
 	   # Download file only if it does not already exist
-	   if (!file.exists(file.path(object@outDir, basename(line))) {
+	   if (!file.exists(file.path(object@outDir, basename(line)))) {
            	curl::curl_download(line, file.path(object@outDir, basename(line)))
 	   }
          } else {
