@@ -140,20 +140,30 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   if (getMergedSamples) {
     write("==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
     message("==== Merging OTU and Sequence Tables ====")
-    pathToOTUTables <- vector(mode="character", length=length(amplicons))
-    pathToSeqTables <- vector(mode="character", length=length(amplicons))
+    # Find path to data
+    pathToSeqTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables")))
+    seq.paths <- list.files(path = pathToSeqTables, recursive = TRUE,
+                            pattern = "\\.rds$", 
+                            full.names = TRUE)	# Get RDS files
+    pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables")))
+    otu.paths <- list.files(path = pathToOTUTables, recursive = TRUE,
+                            pattern = "\\.csv$",
+                            full.names = TRUE)  # Get CSV files
+   
+    #pathToOTUTables <- vector(mode="character", length=length(amplicons))
+    #pathToSeqTables <- vector(mode="character", length=length(amplicons))
     track <- matrix(, nrow = length(amplicons), ncol = 0)
-    for (i in 1:length(amplicons)) {
-      currTab <- amplicons[[i]]
-      currSeq <- currTab[1]
-      currOTU <- currTab[2]
-      pathToOTUTables[i] <- currOTU
-      pathToSeqTables[i] <- currSeq
-    }
+    #for (i in 1:length(amplicons)) {
+    #  currTab <- amplicons[[i]]
+    #  currSeq <- currTab[1]
+    #  currOTU <- currTab[2]
+    #  pathToOTUTables[i] <- currOTU
+    #  pathToSeqTables[i] <- currSeq
+    #}
     
     # Create final merged table
-    finalTable <- mergeSamples(unique(pathToOTUTables), unique(pathToSeqTables), options$projectPrefix, options$assignTaxLevels)
-    
+    #finalTable <- mergeSamples(unique(pathToOTUTables), unique(pathToSeqTables), options$projectPrefix, options$assignTaxLevels)
+    finalTable <- mergeSamples(unique(otu.paths), unique(seq.paths), options$projectPrefix, options$assignTaxLevels)
     if (typeof(finalTable) == FALSE) {
       write("Unable to create merged table", log.file, append = TRUE)
       print("Unable to create final table")

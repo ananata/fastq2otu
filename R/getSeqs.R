@@ -76,6 +76,7 @@ getSeqs <- function(object, useFastqDump = FALSE) {
       message("This is my output path: ", object@outDir)
       output <- object@outDir # Writes to input directory 
     } else {
+      message("Files were written to the following path: ", object@outDir)
       con = file(sample.urls, "r")
       write("\n", file = sample.urls, append = TRUE) # Append newline to end of file
       while ( TRUE ) {
