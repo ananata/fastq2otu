@@ -44,8 +44,12 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   
   # Change working directory to output directory
   path <- out
-  base::setwd(path)
-  
+  if (dir.exists(path)) {
+    base::setwd(path)
+  } else {
+    stop("Could not find the following path: ", path)
+  }
+
   # Save all outputs to file
   if (!is.null(options$projectPrefix)) {
     log.file <- file.path(out, paste0(options$projectPrefix, "_fastq2otu_output.log"))
@@ -55,7 +59,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   }
     
   # Print the date
-  write(paste0("Date: ", Sys.Date()), log.file, append = TRUE)
+  write(paste0("Date: ", Sys.Date()), log.file)
   write(paste0("Analyzing data for ", options$projectPrefix), log.file, append = TRUE)
   
   # Print package versions

@@ -56,7 +56,6 @@ getSeqs <- function(object, useFastqDump = FALSE) {
  	  dir.create(object@outDir)
 	  message("Created ", object@outDir)
 	} else {
-	  closeAllConnections()
 	  stop("Program was stopped. Could not create output directory")
 	}
     }
@@ -68,7 +67,6 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     if (!is.null(object@pathToSampleIDs) & file.exists(object@pathToSampleURLs)) {
       sample.urls <- object@pathToSampleURLs
     } else {
-      closeAllConnections()
       stop(paste0("Invalid input for pathToSampleURLs. ", object@pathToSampleURLs, " could not be found."))
     }
     
@@ -79,12 +77,17 @@ getSeqs <- function(object, useFastqDump = FALSE) {
       output <- object@outDir # Writes to input directory 
     } else {
       con = file(sample.urls, "r")
+      write("\n", file = sample.urls, append = TRUE) # Append newline to end of file
       while ( TRUE ) {
          line = readLines(con, n = 1)
          if ( grepl('^ftp', line) ) {
-           break
-         }
-        curl::curl_download(line, file.path(object@outDir, basename(line)))
+	   # Download file only if it does not already exist
+	   if (!file.exists(file.path(object@outDir, basename(line))) {
+           	curl::curl_download(line, file.path(object@outDir, basename(line)))
+	   }
+         } else {
+	   break
+	 }
       }
       close(con)
       output <- object@outDir # Writes to input directory
