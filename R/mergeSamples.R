@@ -30,7 +30,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   
   # Read OTU tables into R
   clean.otutabs <- gtools::mixedsort(otutabs[otutabs != ""])
-  otutab.list <- lapply(clean.otutabs, read.csv)
+  otutab.list <- lapply(clean.otutabs, readRDS)
 
   # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
   mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list) # Fully merge all tables (i.e. # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...))
