@@ -8,10 +8,9 @@
 #' @export
 mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Verify that sequence tables correspond to OTU tables
-  otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.csv'), '[', 1)))
+  otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.rds'), '[', 1)))
   seqLabels <- na.omit(as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1)))
-  print(otuLabels)
-  print(seqLabels)
+ 
   if (gtools::mixedsort(otuLabels) != gtools::mixedsort(seqLabels)) {
     stop("IDs must match")
   }
@@ -31,7 +30,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   
   # Read OTU tables into R
   clean.otutabs <- gtools::mixedsort(otutabs[otutabs != ""])
-  otutab.list <- lapply(clean.otutabs, readRDS)
+  otutab.list <- lapply(clean.otutabs, read.csv)
 
   # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
   mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list) # Fully merge all tables (i.e. # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...))

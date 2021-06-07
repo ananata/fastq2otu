@@ -147,7 +147,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
                             full.names = TRUE)	# Get RDS files
     pathToOTUTables <- file.path(options$outDir, paste0(options$projectPrefix, "_taxonomy_tables"))
     otu.paths <- list.files(path = pathToOTUTables, recursive = TRUE,
-                            pattern = "\\.csv$",
+                            pattern = "\\.rds$",
                             full.names = TRUE)  # Get CSV files
    
     #pathToOTUTables <- vector(mode="character", length=length(amplicons))
