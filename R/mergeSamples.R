@@ -12,16 +12,16 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.rds'), '[', 1)))
   seqLabels <- na.omit(as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1)))
  
-  if (gtools::mixedsort(otuLabels) != gtools::mixedsort(seqLabels)) {
+  if (gtools::mixedsort(otuLabels) != mixedsort(seqLabels)) {
     stop("IDs must match")
   }
 
   # Read sequence tables into R
-  clean.seqtabs <- gtools::mixedsort(seqtabs[seqtabs != ""])
+  clean.seqtabs <- mixedsort(seqtabs[seqtabs != ""])
   seqtab.list <- lapply(clean.seqtabs, readRDS)
 
   # Merge seqtab.list (produces WIDE matrix)
-  mergedSeqs <- dada2::mergeSequenceTables(tables = seqtab.list)
+  mergedSeqs <- mergeSequenceTables(tables = seqtab.list)
 
   # Transpose
   transposed.mergedSeqs <- t(mergedSeqs)
@@ -30,7 +30,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   rownames(transposed.mergedSeqs) <- NULL  
   
   # Read OTU tables into R
-  clean.otutabs <- gtools::mixedsort(otutabs[otutabs != ""])
+  clean.otutabs <- mixedsort(otutabs[otutabs != ""])
   otutab.list <- lapply(clean.otutabs, readRDS)
 
   # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
@@ -72,6 +72,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
   final.tab <- mergedOTU[ , 1:length(byCols)]
   final.tab <- cbind(final.tab, transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE])
+  message("Created final frequency table")
 
   # Copy the final table
   prop.tab <- final.tab
@@ -97,6 +98,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   
   # Rearrage columns
   prop.tab <- prop.tab[ , c(1:length(byCols), (ncol(prop.tab) - 1), ncol(prop.tab), (ncol(prop.tab) - 2), (length(byCols) + 1):(ncol(prop.tab) - 3))]
+  message("Created final proportion table")
 
   # Write the table to file
   final.print <- paste0(label, "_final_merged_frequency_table.txt")
