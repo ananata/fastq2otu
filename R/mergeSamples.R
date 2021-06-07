@@ -8,7 +8,7 @@
 #' @export
 mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Verify that sequence tables correspond to OTU tables
-  otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.rds'), '[', 1)))
+  otuLabels <- na.omit(as.vector(sapply(strsplit(basename(otutabs), '_OTU_Table.csv'), '[', 1)))
   seqLabels <- na.omit(as.vector(sapply(strsplit(basename(seqtabs), '_seqtab.rds'), '[', 1)))
   print(otuLabels)
   print(seqLabels)
