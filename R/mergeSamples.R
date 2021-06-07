@@ -5,6 +5,7 @@
 #' @return Merged table that can be used to complete cross sample comparisons
 #' @importFrom gtools mixedsort
 #' @importFrom dada2 mergeSequenceTables
+#' @importFrom reshape2 melt
 #' @export
 mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Verify that sequence tables correspond to OTU tables
@@ -45,6 +46,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   
   # Create proportional table
   melted.mergedSeqs <- reshape2::melt(data.table::setDT(as.data.frame(mergedSeqs), keep.rownames = TRUE), "rn")
+  message("Melted mergedSeqs")
 
   # Create new column
   total <- as.matrix(by(melted.mergedSeqs[ , -c(1:2), drop=FALSE], melted.mergedSeqs$rn, FUN=colSums))
