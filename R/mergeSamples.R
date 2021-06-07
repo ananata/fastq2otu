@@ -46,7 +46,6 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   
   # Create proportional table
   melted.mergedSeqs <- reshape2::melt(data.table::setDT(as.data.frame(mergedSeqs), keep.rownames = TRUE), "rn")
-  message("Melted mergedSeqs")
 
   # Create new column
   total <- as.matrix(by(melted.mergedSeqs[ , -c(1:2), drop=FALSE], melted.mergedSeqs$rn, FUN=colSums))
@@ -71,6 +70,10 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
 
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
   final.tab <- mergedOTU[ , 1:length(byCols)]
+  message("Created final.tab")
+  message("Final Tab: ", nrow(final.tab))
+  message("Merged Seqs: ", nrow(transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE])
+
   final.tab <- cbind(final.tab, transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE])
   message("Created final frequency table")
 
