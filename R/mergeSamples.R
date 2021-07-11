@@ -32,10 +32,10 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Read OTU tables into R
   clean.otutabs <- mixedsort(otutabs[otutabs != ""])
   otutab.list <- lapply(clean.otutabs, readRDS)
-  message(otutab.list)
-
+  
   # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
   mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list) # Fully merge all tables (i.e. # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...))
+  colnames(mergedOTU) 
 
   # Warnings: Duplicated column names - fixed here
   names(mergedOTU)[-c(1:length(taxLevels))] <- as.vector(sapply(strsplit(basename(otuLabels), "_"), '[', 2))
