@@ -32,13 +32,14 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   # Read OTU tables into R
   clean.otutabs <- mixedsort(otutabs[otutabs != ""])
   otutab.list <- lapply(clean.otutabs, readRDS)
+  message(otutab.list)
 
   # Merge otutab.list (warnings are fixed in next step) by sequences and lowest tax level
   mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list) # Fully merge all tables (i.e. # i.e. merge(...merge(merge(otutab1, otutab2), otutab3) ...))
-  byCols <- colnames(mergedOTU)
 
   # Warnings: Duplicated column names - fixed here
   names(mergedOTU)[-c(1:length(taxLevels))] <- as.vector(sapply(strsplit(basename(otuLabels), "_"), '[', 2))
+  byCols <- colnames(mergedOTU)
 
   # Reorder rows in mergedOTU to correspond to row order in mergedSeqs
   transposed.mergedSeqs <- as.data.frame(transposed.mergedSeqs)
@@ -115,8 +116,7 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   p.rdata <- paste0(label, "_final_merged_percent_table.rds")
   write.table(prop.tab, file = prop.print, sep = "\t")
   saveRDS(prop.tab, file = p.rdata)
-  message("Created: ")
-  message(prop.print)
+  message("Created: ", prop.print)
   message(p.rdata)
 
   # Return table
