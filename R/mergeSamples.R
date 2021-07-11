@@ -70,9 +70,8 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
 
   # Merge tables (replace columns in mergedOTU with columns in mergedSeqs)
   final.tab <- mergedOTU[ , 1:length(byCols)]
-  message("Created final.tab")
-  message("Final Tab: ", nrow(final.tab))
-  message("Merged Seqs: ", nrow(transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE]))
+  message("Final Tab: ", colnames(final.table))
+  message("Merged Seqs: ", colnames(transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE]))
 
   final.tab <- cbind(final.tab, transposed.mergedSeqs[match(mergedOTU$Sequences, transposed.mergedSeqs$Sequences), 2:ncol(transposed.mergedSeqs), drop = FALSE])
   message("Created final frequency table")
