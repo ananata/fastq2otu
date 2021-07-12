@@ -47,7 +47,19 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   if (dir.exists(path)) {
     base::setwd(path)
   } else {
-    stop("Could not find the following path: ", path)
+    #stop("Could not find the following path: ", path)
+
+    # Create directory if it does not exist
+    if (!dir.exists(path)) {
+        response <- readline(prompt=paste0("Are you sure you want to create ", path, "? <y/N> : "))
+        if (response %in% c("Yes", "Y", "y", "yes")) {
+          dir.create(path)
+          message("Created ", path)
+        } else {
+          stop("Program was stopped. Could not create directory")
+        }
+    }
+
   }
 
   # Save all outputs to file
