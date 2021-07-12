@@ -18,8 +18,8 @@ mergeSamples <- function(otutabs, seqtabs, label, taxLevels) {
   }
   
   # Read sequence tables into R
-  otutab.list <- lapply(mixedsort(otu.paths[otu.paths != ""]), readRDS)
-  seqtab.list <- lapply(mixedsort(seq.paths[seq.paths != ""]), readRDS)
+  otutab.list <- lapply(mixedsort(otutabs[otutabs != ""]), readRDS)
+  seqtab.list <- lapply(mixedsort(seqtabs[seqtabs != ""]), readRDS)
   
   mergedSeqs <- data.table::setDT(as.data.frame(t(dada2::mergeSequenceTables(tables = seqtab.list))), keep.rownames = "Sequences")
   mergedOTU <- Reduce(function(x, y, ...) merge(x, y, all = TRUE, ...), otutab.list)
