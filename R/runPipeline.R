@@ -126,7 +126,6 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
       REGEX_PAT <- options$fastaPattern
     } else {
       message("Missing Input Warning: fastaPattern defaults used.")
-      print("Using fastqPattern defaults")
       REGEX_PAT <- c("*_1.fastq(.gz)?", "*_2.fastq(.gz)?")
     }
 

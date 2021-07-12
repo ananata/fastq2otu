@@ -14,11 +14,24 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 	if (object@isPaired) {
 		# Create output file names for filtered sequences
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_R1_filt_trimmed.fastq.gz"))
-		undownloaded_filtFs <- filtFs[lapply(filtFs, file.exists) == FALSE]
-		forwardFs <- forwardFs[undownloaded_filtFs]
+                if (all(lapply(filtFs, file.exists) == FALSE)) {
+                        undownloaded_filtFs <- filtFs
+                } else {
+                        # Remove files that already exist
+                        undownloaded_filtFs <- filtFs[-grep(FALSE, lapply(filtFs, file.exists) == FALSE)]
+                        forwardFs <- forwardFs[-grep(FALSE, c(lapply(filtFs, file.exists) == FALSE, FALSE, FALSE))]
+                }
+
 		filtRs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_R2_filt_trimmed.fastq.gz"))
-		undownloaded_filtRs <- filtRs[lapply(filtRs, file.exists) == FALSE]
-		reverseRs <- reverseRs[undownloaded_filtRs]
+                if (all(lapply(filtRs, file.exists) == FALSE)) {
+                        undownloaded_filtRs <- filtRs
+                } else {
+                        # Remove files that already exist
+                        undownloaded_filtRs <- filtRs[-grep(FALSE, lapply(filtRs, file.exists) == FALSE)]
+                        forwardFs <- forwardRs[-grep(FALSE, c(lapply(filtRs, file.exists) == FALSE, FALSE, FALSE))]
+                }
+
+
 		if (length(undownloaded_filtFs) != 0) { 
 			# Filter and Trim (only executes paths that do not already exist)
 			filt_trim <- dada2::filterAndTrim(fwd=forwardFs, filt=undownloaded_filtFs, rev=reverseRs, filt.rev=undownloaded_filtRs, 
