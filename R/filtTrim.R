@@ -28,7 +28,7 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
                 } else {
                         # Remove files that already exist
                         undownloaded_filtRs <- filtRs[-grep(FALSE, lapply(filtRs, file.exists) == FALSE)]
-                        forwardFs <- forwardRs[-grep(FALSE, c(lapply(filtRs, file.exists) == FALSE, FALSE, FALSE))]
+                        reverseRs <- reverseRs[-grep(FALSE, c(lapply(filtRs, file.exists) == FALSE, FALSE, FALSE))]
                 }
 
 
