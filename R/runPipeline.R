@@ -161,19 +161,9 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
                             pattern = "\\.rds$",
                             full.names = TRUE)  # Get CSV files
    
-    #pathToOTUTables <- vector(mode="character", length=length(amplicons))
-    #pathToSeqTables <- vector(mode="character", length=length(amplicons))
     track <- matrix(, nrow = length(amplicons), ncol = 0)
-    #for (i in 1:length(amplicons)) {
-    #  currTab <- amplicons[[i]]
-    #  currSeq <- currTab[1]
-    #  currOTU <- currTab[2]
-    #  pathToOTUTables[i] <- currOTU
-    #  pathToSeqTables[i] <- currSeq
-    #}
     
     # Create final merged table
-    #finalTable <- mergeSamples(unique(pathToOTUTables), unique(pathToSeqTables), options$projectPrefix, options$assignTaxLevels)
     finalTable <- mergeSamples(unique(otu.paths), unique(seq.paths), options$projectPrefix, options$assignTaxLevels)
     if (typeof(finalTable) == FALSE) {
       write("Unable to create merged table", log.file, append = TRUE)
@@ -314,8 +304,8 @@ single_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX = 
     }
     
     # Save summary table
-    if (file.exists("filtered_objects.RData")) {
-      load("filtered_objects.RData") # Load saveFilt obect in current environment
+    if (file.exists(paste0(object@outDir, "/", "filtered_objects.RData"))) {
+      load(paste0(object@outDir, "/", "filtered_objects.RData")) # Load saveFilt obect in current environment
       
       # Combine all information
       track <- cbind(sample_ls, saveFilt, derep_ls, dada_ls, nochim_ls)
@@ -453,7 +443,7 @@ paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 
       }
     }
     
-    # Create object - simplifies debugging process -- TODO: Test all inputs in config file
+    # Get options
     options <- yaml::yaml.load_file(file)
     infoList <- lapply(1:length(Fs), function(input, samples, label, config) {
       return(help_paired_analysis(filt.forward[[input]], filt.reverse[[input]], sName=samples[input], index=input, options=config))
@@ -480,8 +470,8 @@ paired_analysis <- function(fp, sample.names, file, getQuality = FALSE, REGEX_1 
     }
     
     # Save summary table
-    if (file.exists("filtered_objects.RData")) {
-      load("filtered_objects.RData") # Load saveFilt obect in current environment
+    if (file.exists(paste0(object@outDir, "/", "filtered_objects.RData"))) {
+      load(paste0(object@outDir, "/", "filtered_objects.RData")) # Load saveFilt obect in current environment
       
       # Combine all information
       track <- cbind(sample_ls, saveFilt, derepFs_ls, derepRs_ls, dadaFs_ls, dadaRs_ls, nochim_ls, merged_ls)

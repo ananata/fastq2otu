@@ -14,7 +14,7 @@ filtTrim <- function(object, sample.names, forwardFs = NA, reverseRs = NA) {
 	if (object@isPaired) {
 		# Create output file names for filtered sequences
 		filtFs <- file.path(path, paste0(label, "_filtered"), paste0(sample.names, "_R1_filt_trimmed.fastq.gz"))
-                if (all(lapply(filtFs, file.exists) == FALSE)) {
+                if (all(lapply(filtFs, file.exists) == FALSE)) { # If no files exist
                         undownloaded_filtFs <- filtFs
                 } else {
                         # Remove files that already exist
