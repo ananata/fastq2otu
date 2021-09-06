@@ -1,88 +1,68 @@
 #=========================
 # Use the following file as a template when handling single-end data
+# Replace <input> with paths and/or custom parameters
+# Modify default inputs as you need
 # ========================
 
 # === General Inputs ===
-projectPrefix: single_vaginal_set
-outDir: fastq2otu/inst/examples/single/output
-pathToData: fastq2out/inst/examples/single/output/seq_files
+projectPrefix: <input>
+outDir: <input>
+pathToData: <input>
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: path/to/SRR_Acc_List.txt # Optional: Provide when using bbduk.sh or fastq-dump
+pathToSampleIDs: <input>
 fastaPattern: "*.fastq(.gz)?$"
 
-# === Trimming Adapters (for bbduk.sh) ===
-# Trimmed sequences are written to pathToData parameter
-listOfAdapters: path/to/adapters.fa
-pathToRawFastq: path/to/raw_fastq/
-
 # === Plot Quality ===
-aggregateQual: true
+aggregateQual: TRUE
 qualN: 5e+05
 
 # === Downloading sequence data ===
-useFastqDump: false
+useFastqDump: FALSE
 pathToFastqDump: path/to/fastq-dump
-pathToSampleURLs: path/to/urls.txt
-
-# === Running FASTQC ===
-runFastqc: true
-pathToFastqc: path/to/fastqc
-installFastqc: false
-pathToFastqcResults: path/to/fastqc_results
-fastqcThreads: 4
-fastqcExperimentDescription: "16S rRNA amplicon data"
+pathToSampleURLs: <input>
 
 # === Dereplicate reads to keep only unique sequences ===
 derepN: 1e+06
 
 # === Detect and learn error patterns in sequences ===
 errN: 1e+08
-errMultithread: false
-saveErrorsPlot: false
+errMultithread: FALSE
+saveErrorsPlot: FALSE
 
 # === Denoise data ===
 dadaBandSize: 16
 dadaOmegaA: 1e-40
 
 # === Find chimeric sequences ===
-createChimeraDetectionTable: false
+createChimeraDetectionTable: FALSE
 chimeraDetectionMinSampleFraction: 0.9
 chimeraDetectionIgnoreNegatives: 1
 chimeraDetectionMinFoldParentOverabundance: 1.5
 chimeraDetectionParentAbundance: 2
-chimeraDetectionAllowOneOff: false
+chimeraDetectionAllowOneOff: FALSE
 chimeraDetectionMaxShift: 16
 
-# === Filtering (Single-end data example)
+# === Filtering 
 filtMaxEE: 2.5
 filtTruncQ: 0
 filtTruncLen: 0
 filtTrimLeft: 0
 filtTrimRight: 0
-filtMatchIDs: false
+filtMatchIDs: FALSE
 filtMinLen: 50
 
-# === Filtering (Paired-end data example)
-# filtMaxEE: [2.5, 2.5]
-# filtTruncQ: [0, 0]
-# filtTruncLen: [0, 0]
-# filtTrimLeft: [0, 0]
-# filtTrimRight: [0, 0]
-# filtMatchIDs: false
-# filtMinLen: [50, 50]
-
 # === Merge Paired-end Reads ===
-mergePairs: false
-mergePairsTrimOverhang: true
+mergePairs: FALSE
+mergePairsTrimOverhang: TRUE
 mergePairsMinOverlap: 12
 mergePairsMaxMismatch: 0
-mergePairsReturnRejects: false
-mergePairsJustConcatenate: false
+mergePairsReturnRejects: TRUE
+mergePairsJustConcatenate: TRUE
 
 # === Assign Taxonomy ===
-taxDatabase: ~/lineages/stirrups_ref_library_10_25_17.fa.gz
-assignTaxMinBootstrap: 50
-assignTaxTryComplement: false
-assignTaxOutputBootstraps: false
+taxDatabase: <input>
+assignTaxMinBootstrap: 70
+assignTaxTryComplement: FALSE
+assignTaxOutputBootstraps: FALSE
 assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
