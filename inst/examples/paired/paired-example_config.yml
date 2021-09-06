@@ -1,94 +1,69 @@
 #=========================
-# Use the following file as a template when handling paired-end data:
+# Uses the following file as a template 
+# when handling paired-end data
+# Replace <input> with parameters
+# Default values can be modified as you wish
 # ========================
 
 # === General Inputs ===
-projectPrefix: paired_vaginal_set
-outDir: fastq2otu/inst/examples/paired/output
-pathToData: fastq2otu/inst/examples/paired/output/seq_files
+projectPrefix: <input>
+outDir: <input>
+pathToData: <input>
 verbose: TRUE
 multithread: TRUE
-pathToSampleIDs: fastq2otu/inst/examples/paired/paired-example_SRR_Acc_List.txt # Provide when using fastq-dump
-fastaPattern: ["^.*1\\.fastq(.gz)?$", "^.*1\\.fastq(.gz)?$"] # Quotation marks required
-
-# === Trimming Adapters ===
-# Trimmed sequences are written to pathToData parameter
-listOfAdapters: path/to/adapters.fa
-pathToRawFastq: path/to/raw_fastq/
-maxMismatch: 2
-allowIndels: false
-trimForwardReads: false
-trimReverseReads: false
-orientReads: false
-compressFiles: false
+pathToSampleIDs: <input>
+fastaPattern: [*1.fastq, *2.fastq]
 
 # === Plot Quality ===
-aggregateQual: true
+aggregateQual: TRUE
 qualN: 5e+05
 
 # === Downloading sequence data ===
-useFastqDump: false
-pathToFastqDump: ~/.sra-toolkit/bin/fastq-dump
-pathToSampleURLs: path/to/urls.txt
-
-# === Running FASTQC ===
-runFastqc: true
-pathToFastqc: path/to/fastqc
-installFastqc: false
-pathToFastqcResults: path/to/fastqc_results
-fastqcThreads: 4
-fastqcExperimentDescription: "16S rRNA amplicon data"
+useFastqDump: FALSE
+pathToFastqDump: <input>
+pathToSampleURLs: <input>
 
 # === Dereplicate reads to keep only unique sequences ===
 derepN: 1e+06
 
 # === Detect and learn error patterns in sequences ===
 errN: 1e+08
-errMultithread: false
-saveErrorsPlot: false
+errMultithread: FALSE
+saveErrorsPlot: FALSE
 
 # === Denoise data ===
 dadaBandSize: 16
 dadaOmegaA: 1e-40
 
 # === Find chimeric sequences ===
-createChimeraDetectionTable: false
+createChimeraDetectionTable: FALSE
 chimeraDetectionMinSampleFraction: 0.9
 chimeraDetectionIgnoreNegatives: 1
 chimeraDetectionMinFoldParentOverabundance: 1.5
 chimeraDetectionParentAbundance: 2
-chimeraDetectionAllowOneOff: false
+chimeraDetectionAllowOneOff: FALSE
 chimeraDetectionMaxShift: 16
 
-# === Filtering (Single-end data example)
-# filtMaxEE: 2.5
-# filtTruncQ: 0
-# filtTruncLen: 0
-# filtTrimLeft: 0
-# filtTrimRight: 0
-# filtMatchIDs: false
-# filtMinLen: 50
-
 # === Filtering (Paired-end data example)
-filtMaxEE: [2.5, 2.5]
-filtTruncQ: [0, 0]
-filtTruncLen: [0, 0]
+filtMaxEE: [2, 2]
+filtTruncQ: [2, 2]
+filtTruncLen: [240, 160]
 filtTrimLeft: [0, 0]
 filtTrimRight: [0, 0]
-filtMatchIDs: false
+filtMatchIDs: FALSE
 filtMinLen: [50, 50]
 
 # === Merge Paired-end Reads ===
-mergePairs: false
-mergePairsTrimOverhang: true
+mergePairs: FALSE
+mergePairsTrimOverhang: TRUE
 mergePairsMinOverlap: 12
 mergePairsMaxMismatch: 0
-mergePairsReturnRejects: false
-mergePairsJustConcatenate: false
+mergePairsReturnRejects: FALSE
+mergePairsJustConcatenate: FALSE
 
 # === Assign Taxonomy ===
-taxDatabase: ~/lineages/stirrups_ref_library_10_25_17.fa # TODO: Update path
+taxDatabase: <input>
 assignTaxMinBootstrap: 50
-assignTaxTryComplement: false
-assignTaxOutputBootstraps: false
+assignTaxTryComplement: FALSE
+assignTaxOutputBootstraps: FALSE
 assignTaxLevels: ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
