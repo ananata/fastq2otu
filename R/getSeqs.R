@@ -49,17 +49,6 @@ getSeqs <- function(object, useFastqDump = FALSE) {
     second_check <- ifelse(is.na(object@outDir) | object@outDir == "", TRUE, FALSE)
     if (second_check) { stop("Invalid path supplied for pathToData: ", object@outDir, ". Please check config file") }
      
-    # Create directory if it does not exist
-    if (!dir.exists(object@outDir)) {
-	response <- readline(prompt=paste0("Are you sure you want to create ", object@outDir, "? <y/N> : "))
-	if (response %in% c("Yes", "Y", "y", "yes")) {
- 	  dir.create(object@outDir)
-	  message("Created ", object@outDir)
-	} else {
-	  stop("Program was stopped. Could not create output directory")
-	}
-    }
-    
     # Extract required inputs
     # Get path to sample URLs -- obtained from SRA Explorer site
     # Check for objects returning NA/NULL or empty strings
@@ -76,7 +65,6 @@ getSeqs <- function(object, useFastqDump = FALSE) {
       message("This is my output path: ", object@outDir)
       output <- object@outDir # Writes to input directory 
     } else {
-      message("Files were written to the following path: ", object@outDir)
       con = file(sample.urls, "r")
       write("\n", file = sample.urls, append = TRUE) # Append newline to end of file
       while ( TRUE ) {
