@@ -47,8 +47,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   if (dir.exists(path)) {
     base::setwd(path)
   } else {
-    #stop("Could not find the following path: ", path)
-
+	  
     # Create directory if it does not exist
     if (!dir.exists(path)) {
         response <- readline(prompt=paste0("Are you sure you want to create ", path, "? <y/N> : "))
@@ -56,7 +55,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
           dir.create(path)
           message("Created ", path)
         } else {
-          stop("Program was stopped. Could not create directory")
+          stop("Program was stopped. Could not find output directory")
         }
     }
 
@@ -70,7 +69,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     options$projectPrefix <- "fastq2otu_project" # Changed to default
   }
     
-  # Print the date
+  # Print the date to log
   write(paste0("Date: ", Sys.Date()), log.file)
   write(paste0("Analyzing data for ", options$projectPrefix), log.file, append = TRUE)
   
@@ -79,31 +78,28 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   write(paste0("DADA2 Version: ", packageVersion("dada2")), log.file, append = TRUE)
   write(paste0("YAML Version: ", packageVersion("yaml")), log.file, append = TRUE)
   
+  # Download sequences
   if (getDownloadedSeqs == TRUE) {
     write("==== Downloading sequences from NCBI ====", log.file, append = TRUE)
-    message("==== Downloading sequences from NCBI ====")
     object <- readConfig(configFile, type = "seqdump")
-    fp <- getSeqs(object)
+    fp <- getSeqs(object) # Returns path to input directory (pathToData parameter)
   }
 
-  # Remove primers and update path
-  if (getTrimmedAdapters) {
-    write("==== Removing Primers ====", log.file, append = TRUE)
-    message("==== Removing Primers ====")
-    object <- readConfig(configFile, type = "primertrim")
-    fp <- trimAdapters(object)
-  } else {
-    fp <- options$pathToData
-  }
+  # Remove primers and update path - use trimLeft/trimRight or cutadapt (both are better options)
+  # if (getTrimmedAdapters) {
+  #   write("==== Removing Primers ====", log.file, append = TRUE)
+  #  object <- readConfig(configFile, type = "primertrim")
+  #  fp <- trimAdapters(object)
+  # } else {
+  #  fp <- options$pathToData
+  # }
     
   # Plot Quality Distribution and save object
   if (getQuality) {
     write("==== Plotting quality distribution BEFORE trimming ====", log.file, append = TRUE)
-    message("==== Plotting quality distribution BEFORE trimming ====")
     plot.object <- readConfig(configFile, type = "qualityplot")
     if (is.null(plot.object)) {
-      message("Unable to generate quality plot object")
-      stop("Unable to generate quality plot object")
+      stop("Unable to generate quality distrbution plot")
     }
 
     plots <- plotQuality(fp, options$projectPrefix, plot.object)
@@ -125,8 +121,8 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
     if (!is.null(options$fastaPattern) & length(options$fastaPattern) == 2) {
       REGEX_PAT <- options$fastaPattern
     } else {
-      message("Missing Input Warning: fastaPattern defaults used.")
-      REGEX_PAT <- c("*_1.fastq(.gz)?", "*_2.fastq(.gz)?")
+      message("Missing Input Warning: default regex used.")
+      REGEX_PAT <- c("*_1.fastq(.gz)?", "*_2.fastq(.gz)?") # Default regex pattern for fastq files
     }
 
     # === Analyze as paired-end data ===
@@ -150,7 +146,7 @@ runPipeline <- function(configFile, isPaired = FALSE, getQuality = TRUE, getMerg
   # Merge tables
   if (getMergedSamples) {
     write("==== Merging OTU and Sequence Tables ====", log.file, append = TRUE)
-    message("==== Merging OTU and Sequence Tables ====")
+	  
     # Find path to data
     pathToSeqTables <- file.path(options$outDir, paste0(options$projectPrefix, "_sequence_tables"))
     seq.paths <- list.files(path = pathToSeqTables, recursive = TRUE,
